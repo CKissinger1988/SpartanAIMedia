@@ -68,9 +68,12 @@ class MediaViewModel(
                 if (profile != null) {
                     observeAppData(profile.userId)
                     
-                    // Auto-activate Pi Node if not already active
+                    // Sync service state with profile
+                    piNodeService.setNodeActive(profile.isPiNodeActive)
+
+                    // Auto-activate Pi Node if not already active in DB
                     if (!profile.isPiNodeActive) {
-                        repository.setPiNodeActive(profile.userId, true)
+                        togglePiNode(true)
                     }
                 }
             }
@@ -135,6 +138,7 @@ class MediaViewModel(
 
     fun togglePiNode(isActive: Boolean) {
         val userId = _uiState.value.selectedProfile?.userId ?: return
+        piNodeService.setNodeActive(isActive)
         viewModelScope.launch {
             repository.setPiNodeActive(userId, isActive)
         }

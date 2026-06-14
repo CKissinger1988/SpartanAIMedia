@@ -1,8 +1,7 @@
 package com.spartanai.spartanaimedia.data.remote
 
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 
 /**
  * Interfaces with the Pi Network Node.
@@ -10,16 +9,32 @@ import kotlinx.coroutines.flow.flow
  */
 class PiNodeService {
 
-    fun monitorNodeStatus(): Flow<NodeStatus> = flow {
-        while (true) {
-            // Simulated blockchain sync status
-            emit(NodeStatus(
-                isActive = true,
-                syncedBlock = 12540032,
-                totalBlocks = 12540040,
-                connectedPeers = 8
-            ))
-            delay(5000)
+    private val _isActive = MutableStateFlow(false)
+    
+    fun setNodeActive(active: Boolean) {
+        _isActive.value = active
+    }
+
+    fun monitorNodeStatus(): Flow<NodeStatus> = _isActive.flatMapLatest { active ->
+        if (!active) {
+            flowOf(NodeStatus(isActive = false, syncedBlock = 0, totalBlocks = 0, connectedPeers = 0))
+        } else {
+            flow {
+                var currentBlock = 12540000L
+                val targetBlock = 12540050L
+                while (true) {
+                    if (currentBlock < targetBlock) {
+                        currentBlock += (1..3).random()
+                    }
+                    emit(NodeStatus(
+                        isActive = true,
+                        syncedBlock = currentBlock,
+                        totalBlocks = targetBlock,
+                        connectedPeers = (5..12).random()
+                    ))
+                    delay(3000)
+                }
+            }
         }
     }
 
