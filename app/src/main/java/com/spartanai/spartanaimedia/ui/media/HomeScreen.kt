@@ -19,6 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.platform.LocalUriHandler
 import coil3.compose.AsyncImage
 import com.spartanai.spartanaimedia.domain.model.MediaItem
 
@@ -32,6 +34,30 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var isSearchActive by remember { mutableStateOf(false) }
+    val uriHandler = LocalUriHandler.current
+
+    // Forced Update Dialog
+    uiState.updateInfo?.let { info ->
+        if (info.isForceUpdate) {
+            AlertDialog(
+                onDismissRequest = { /* Non-dismissible */ },
+                title = { Text("Update Required") },
+                text = { Text("A new version of SpartanAI Media (v${info.latestVersion}) is available. You must update to continue using the application.") },
+                confirmButton = {
+                    Button(
+                        onClick = { uriHandler.openUri(info.downloadUrl) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("UPDATE NOW")
+                    }
+                },
+                properties = DialogProperties(
+                    dismissOnBackPress = false,
+                    dismissOnClickOutside = false
+                )
+            )
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -83,7 +109,26 @@ fun HomeScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
-                ) { }
+                ) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(uiState.searchSuggestions) { suggestion ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { viewModel.onSearchQueryChanged(suggestion) },
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Default.History, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
+                                Spacer(Modifier.width(16.dp))
+                                Text(suggestion, style = MaterialTheme.typography.bodyLarge)
+                            }
+                        }
+                    }
+                }
             }
         }
     ) { padding ->
@@ -92,10 +137,38 @@ fun HomeScreen(
                 CircularProgressIndicator()
             }
         } else {
+            val uriHandler = LocalUriHandler.current
             LazyColumn(
                 modifier = Modifier.padding(padding),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
+                // Update Notification
+                uiState.updateInfo?.let { info ->
+                    if (info.updateAvailable) {
+                        item {
+                            Surface(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                modifier = Modifier.fillMaxWidth().clickable { uriHandler.openUri(info.downloadUrl) }
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(Icons.Default.Update, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                                    Spacer(Modifier.width(12.dp))
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text("Update Available: v${info.latestVersion}", fontWeight = FontWeight.Bold)
+                                        Text("Download the latest SpartanAI features.", style = MaterialTheme.typography.bodySmall)
+                                    }
+                                    TextButton(onClick = { uriHandler.openUri(info.downloadUrl) }) {
+                                        Text("DOWNLOAD")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // Featured / Continue Watching (only on "All" tab)
                 if (uiState.selectedCategory == "All" && uiState.continueWatching.isNotEmpty() && uiState.searchQuery.isEmpty()) {
                     item {
@@ -106,6 +179,36 @@ fun HomeScreen(
                         ) {
                             items(uiState.continueWatching) { item ->
                                 ContinueWatchingCard(item, onMediaClick)
+                            }
+                        }
+                    }
+                }
+
+                // Nearby Spartans (P2P Discovery)
+                if (uiState.selectedCategory == "All" && uiState.nearbyPeers.isNotEmpty() && uiState.searchQuery.isEmpty()) {
+                    item {
+                        SectionHeader("Nearby Spartans")
+                        LazyRow(
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(uiState.nearbyPeers) { peer ->
+                                Card(
+                                    modifier = Modifier.width(180.dp),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(12.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(Icons.Default.WifiTethering, null, tint = MaterialTheme.colorScheme.primary)
+                                        Spacer(Modifier.width(12.dp))
+                                        Column {
+                                            Text(peer.name, style = MaterialTheme.typography.labelLarge, maxLines = 1)
+                                            Text("Ready to share", style = MaterialTheme.typography.labelSmall)
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

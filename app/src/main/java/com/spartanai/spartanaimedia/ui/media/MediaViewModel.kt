@@ -2,12 +2,11 @@ package com.spartanai.spartanaimedia.ui.media
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.spartanai.spartanaimedia.data.remote.MediaDownloadManager
-import com.spartanai.spartanaimedia.data.remote.PiBlockchainManager
-import com.spartanai.spartanaimedia.data.remote.PiNodeService
+import com.spartanai.spartanaimedia.data.remote.*
 import com.spartanai.spartanaimedia.domain.model.MediaItem
 import com.spartanai.spartanaimedia.domain.model.UserProfile
 import com.spartanai.spartanaimedia.domain.repository.MediaRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -17,111 +16,221 @@ data class MediaUiState(
     val continueWatching: List<MediaItem> = emptyList(),
     val downloadedMedia: List<MediaItem> = emptyList(),
     val watchlist: List<MediaItem> = emptyList(),
+    val recommendations: List<MediaItem> = emptyList(),
     val profiles: List<UserProfile> = emptyList(),
     val selectedProfile: UserProfile? = null,
     val searchQuery: String = "",
+    val searchSuggestions: List<String> = emptyList(),
     val selectedCategory: String = "All",
     val nodeStatus: PiNodeService.NodeStatus? = null,
-    val isLoading: Boolean = false,
+    val updateInfo: UpdateInfo? = null,
+    val nearbyPeers: List<PeerDevice> = emptyList(),
+    val syncEvent: SyncEvent? = null,
+    val chatMessages: List<SyncEvent.Message> = emptyList(),
+    val isSyncConnected: Boolean = false,
+    val isLoading: Boolean = true,
     val error: String? = null
 )
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MediaViewModel(
     private val repository: MediaRepository,
     private val downloadManager: MediaDownloadManager,
     private val piBlockchainManager: PiBlockchainManager,
-    private val piNodeService: PiNodeService
+    private val piNodeService: PiNodeService,
+    private val updateManager: UpdateManager,
+    private val preloadManager: PreloadManager,
+    private val suggestionManager: SearchSuggestionManager,
+    private val p2pManager: P2PManager,
+    private val syncManager: MediaSyncManager,
+    private val recommendationEngine: RecommendationEngine
 ) : ViewModel() {
-
-    private val _uiState = MutableStateFlow(MediaUiState())
-    val uiState: StateFlow<MediaUiState> = _uiState.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     private val _selectedCategory = MutableStateFlow("All")
+    private val _chatMessages = MutableStateFlow<List<SyncEvent.Message>>(emptyList())
+    private val _currentMediaId = MutableStateFlow<String?>(null)
+
+    // The main reactive pipeline for app data
+    val uiState: StateFlow<MediaUiState> = combine(
+        combine(
+            repository.getAllProfiles(),
+            repository.getSelectedProfile(),
+            updateManager.checkForUpdates()
+        ) { profiles, selectedProfile, updateInfo ->
+            AppDataBundle(profiles, selectedProfile, updateInfo)
+        },
+        combine(
+            _searchQuery,
+            _selectedCategory,
+            piNodeService.monitorNodeStatus(),
+            p2pManager.peers,
+            _currentMediaId
+        ) { query, category, nodeStatus, peers, currentMediaId ->
+            UiContext(query, category, nodeStatus, peers, currentMediaId)
+        },
+        combine(
+            syncManager.incomingEvents,
+            syncManager.connectionStatus,
+            _chatMessages
+        ) { event, connected, messages ->
+            Triple(event, connected, messages)
+        }
+    ) { data, context, sync ->
+        
+        val selectedProfile = data.selectedProfile
+        if (selectedProfile == null) {
+            flow {
+                emit(MediaUiState(
+                    profiles = data.profiles,
+                    updateInfo = data.updateInfo,
+                    isLoading = false
+                ))
+            }
+        } else {
+            // Auto-activate node and P2P if needed
+            if (!selectedProfile.isPiNodeActive) {
+                togglePiNode(true)
+                p2pManager.startP2P()
+            }
+            piNodeService.setNodeActive(selectedProfile.isPiNodeActive)
+
+            // Internal logic for chat and events
+            val latestEvent = sync.first
+            if (latestEvent is SyncEvent.Message) {
+                val currentMessages = _chatMessages.value
+                if (currentMessages.none { it.timestamp == latestEvent.timestamp && it.userId == latestEvent.userId }) {
+                    _chatMessages.value = (currentMessages + latestEvent).takeLast(50)
+                }
+            }
+
+            combine(
+                repository.getMediaItems(context.query),
+                repository.getWatchlist(selectedProfile.userId),
+                repository.getMediaItems(null) 
+            ) { filteredItems, watchlist, allItems ->
+                val filteredByTab = if (context.category == "All") filteredItems else filteredItems.filter { it.category == context.category }
+                val grouped = filteredByTab.groupBy { it.category }
+                    .mapValues { entry -> entry.value.groupBy { it.genre } }
+                
+                val downloaded = filteredItems.filter { it.isDownloaded }
+                val continueWatching = filteredItems.filter { it.lastPlaybackPosition > 0 && it.progress < 0.95f }
+                    .sortedByDescending { m -> m.lastPlaybackPosition }
+                
+                // Proactive Pre-loading
+                if (continueWatching.isNotEmpty()) {
+                    preloadManager.preloadItems(continueWatching)
+                }
+
+                // AI Suggestions
+                val suggestions = suggestionManager.getSuggestions(context.query, allItems)
+
+                // Recommendations
+                val recommendations = context.currentMediaId?.let { id ->
+                    allItems.find { it.id == id }?.let { current ->
+                        recommendationEngine.getRelatedContent(current, allItems)
+                    }
+                } ?: emptyList()
+
+                MediaUiState(
+                    mediaByCategory = grouped,
+                    allItems = filteredItems,
+                    downloadedMedia = downloaded,
+                    continueWatching = continueWatching,
+                    watchlist = watchlist,
+                    recommendations = recommendations,
+                    profiles = data.profiles,
+                    selectedProfile = selectedProfile,
+                    searchQuery = context.query,
+                    searchSuggestions = suggestions,
+                    selectedCategory = context.category,
+                    nodeStatus = context.nodeStatus,
+                    updateInfo = data.updateInfo,
+                    nearbyPeers = context.peers,
+                    syncEvent = sync.first,
+                    chatMessages = sync.third,
+                    isSyncConnected = sync.second,
+                    isLoading = false
+                )
+            }
+        }
+    }.flatMapLatest { it }
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = MediaUiState()
+    )
+
+    private data class AppDataBundle(
+        val profiles: List<UserProfile>,
+        val selectedProfile: UserProfile?,
+        val updateInfo: UpdateInfo?
+    )
+
+    private data class UiContext(
+        val query: String,
+        val category: String,
+        val nodeStatus: PiNodeService.NodeStatus,
+        val peers: List<PeerDevice>,
+        val currentMediaId: String?
+    )
 
     init {
-        loadInitialData()
-        observeProfiles()
-        observeNodeStatus()
+        seedInitialData()
     }
 
-    private fun loadInitialData() {
-        viewModelScope.launch {
-            repository.refreshMediaItems()
-        }
+    override fun onCleared() {
+        super.onCleared()
+        p2pManager.stopP2P()
+        syncManager.disconnect()
     }
 
-    private fun observeProfiles() {
+    private fun seedInitialData() {
         viewModelScope.launch {
-            repository.getAllProfiles().collect { profiles ->
+            repository.getAllProfiles().first().let { profiles ->
                 if (profiles.isEmpty()) {
                     repository.createProfile("Spartan Warrior", "https://api.dicebear.com/7.x/avataaars/svg?seed=Spartan")
                     repository.createProfile("Anonymous Shadow", "https://api.dicebear.com/7.x/bottts/svg?seed=Shadow", isAnonymous = true)
                 }
-                _uiState.update { it.copy(profiles = profiles) }
             }
-        }
-
-        viewModelScope.launch {
-            repository.getSelectedProfile().collectLatest { profile ->
-                _uiState.update { it.copy(selectedProfile = profile) }
-                if (profile != null) {
-                    observeAppData(profile.userId)
-                    
-                    // Sync service state with profile
-                    piNodeService.setNodeActive(profile.isPiNodeActive)
-
-                    // Auto-activate Pi Node if not already active in DB
-                    if (!profile.isPiNodeActive) {
-                        togglePiNode(true)
-                    }
-                }
-            }
+            repository.refreshMediaItems()
         }
     }
 
-    private fun observeAppData(userId: String) {
-        viewModelScope.launch {
-            combine(
-                _searchQuery,
-                _selectedCategory
-            ) { query, category -> 
-                Pair(query, category)
-            }.flatMapLatest { (query, category) ->
-                combine(
-                    repository.getMediaItems(query),
-                    repository.getWatchlist(userId)
-                ) { items, watchlist ->
-                    val filteredByTab = if (category == "All") items else items.filter { it.category == category }
-                    val grouped = filteredByTab.groupBy { it.category }
-                        .mapValues { entry -> entry.value.groupBy { it.genre } }
-                    
-                    val downloaded = items.filter { it.isDownloaded }
-                    val continueWatching = items.filter { it.lastPlaybackPosition > 0 && it.progress < 0.95f }
-                    
-                    _uiState.update { 
-                        it.copy(
-                            mediaByCategory = grouped,
-                            allItems = items,
-                            downloadedMedia = downloaded,
-                            continueWatching = continueWatching.sortedByDescending { m -> m.lastPlaybackPosition },
-                            watchlist = watchlist,
-                            searchQuery = query,
-                            selectedCategory = category,
-                            isLoading = false
-                        )
-                    }
-                }
-            }.collect()
-        }
+    fun setCurrentlyPlaying(mediaId: String?) {
+        _currentMediaId.value = mediaId
     }
 
-    private fun observeNodeStatus() {
-        viewModelScope.launch {
-            piNodeService.monitorNodeStatus().collect { status ->
-                _uiState.update { it.copy(nodeStatus = status) }
-            }
-        }
+    fun startSyncSession(roomId: String) {
+        val userId = uiState.value.selectedProfile?.userId ?: return
+        syncManager.connect(roomId, userId)
+        _chatMessages.value = emptyList() // Clear old chat
+    }
+
+    fun sendSyncEvent(event: SyncEvent) {
+        syncManager.sendEvent(event)
+    }
+
+    fun sendReaction(emoji: String) {
+        val userId = uiState.value.selectedProfile?.userId ?: return
+        syncManager.sendEvent(SyncEvent.Reaction(userId, emoji))
+    }
+
+    fun sendChatMessage(text: String) {
+        val profile = uiState.value.selectedProfile ?: return
+        val message = SyncEvent.Message(
+            userId = profile.userId,
+            username = profile.username,
+            text = text
+        )
+        // Add to local list immediately for better responsiveness
+        _chatMessages.value = (_chatMessages.value + message).takeLast(50)
+        syncManager.sendEvent(message)
+    }
+
+    fun stopSync() {
+        syncManager.disconnect()
+        _chatMessages.value = emptyList()
     }
 
     fun loginWithPi() {
@@ -129,7 +238,7 @@ class MediaViewModel(
             piBlockchainManager.authenticate()
             piBlockchainManager.piAuthState.collectLatest { result ->
                 if (result is PiBlockchainManager.PiAuthResult.Success) {
-                    val userId = _uiState.value.selectedProfile?.userId ?: return@collectLatest
+                    val userId = uiState.value.selectedProfile?.userId ?: return@collectLatest
                     repository.updatePiData(userId, result.username, result.walletAddress)
                 }
             }
@@ -137,10 +246,10 @@ class MediaViewModel(
     }
 
     fun togglePiNode(isActive: Boolean) {
-        val userId = _uiState.value.selectedProfile?.userId ?: return
-        piNodeService.setNodeActive(isActive)
+        val userId = uiState.value.selectedProfile?.userId ?: return
         viewModelScope.launch {
             repository.setPiNodeActive(userId, isActive)
+            if (isActive) p2pManager.startP2P() else p2pManager.stopP2P()
         }
     }
 
@@ -171,7 +280,7 @@ class MediaViewModel(
     }
 
     fun downloadMedia(item: MediaItem) {
-        val isSecure = _uiState.value.selectedProfile?.isAnonymous ?: false
+        val isSecure = uiState.value.selectedProfile?.isAnonymous ?: false
         downloadManager.downloadMedia(item.mediaUrl, item.title, isSecure)
         viewModelScope.launch {
             val localPath = if (isSecure) "secure_media/${item.title}.mp4" else "Movies/${item.title}.mp4"
@@ -180,8 +289,8 @@ class MediaViewModel(
     }
 
     fun toggleWatchlist(item: MediaItem) {
-        val userId = _uiState.value.selectedProfile?.userId ?: return
-        val isInWatchlist = _uiState.value.watchlist.any { it.id == item.id }
+        val userId = uiState.value.selectedProfile?.userId ?: return
+        val isInWatchlist = uiState.value.watchlist.any { it.id == item.id }
         
         viewModelScope.launch {
             if (isInWatchlist) {

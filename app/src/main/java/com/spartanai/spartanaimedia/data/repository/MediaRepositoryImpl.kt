@@ -11,10 +11,8 @@ import com.spartanai.spartanaimedia.domain.model.MediaItem
 import com.spartanai.spartanaimedia.domain.model.ProxyConfig
 import com.spartanai.spartanaimedia.domain.model.UserProfile
 import com.spartanai.spartanaimedia.domain.repository.MediaRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withContext
 import java.util.UUID
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -25,6 +23,17 @@ class MediaRepositoryImpl(
 ) : MediaRepository {
     
     private val selectedUserId = MutableStateFlow<String?>(null)
+
+    init {
+        // Simple initialization - in a real app, this might be from SharedPreferences
+        // For SpartanAI, we'll try to pick the first available profile on startup
+        CoroutineScope(Dispatchers.IO).launch {
+            val profiles = userDao.getAllProfiles().first()
+            if (profiles.isNotEmpty()) {
+                selectedUserId.value = profiles.first().userId
+            }
+        }
+    }
 
     override fun getMediaItems(query: String?): Flow<List<MediaItem>> {
         val flow = if (query.isNullOrBlank()) {
@@ -95,10 +104,7 @@ class MediaRepositoryImpl(
     override fun getSelectedProfile(): Flow<UserProfile?> {
         return selectedUserId.flatMapLatest { id ->
             if (id == null) flowOf(null)
-            else flow {
-                val entity = userDao.getProfileById(id)
-                emit(entity?.toDomain())
-            }
+            else userDao.observeProfileById(id).map { it?.toDomain() }
         }
     }
 

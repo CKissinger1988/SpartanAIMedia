@@ -14,6 +14,9 @@ interface UserDao {
     @Query("SELECT * FROM user_profiles WHERE userId = :userId")
     fun getProfileById(userId: String): UserProfileEntity?
 
+    @Query("SELECT * FROM user_profiles WHERE userId = :userId")
+    fun observeProfileById(userId: String): Flow<UserProfileEntity?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertProfile(profile: UserProfileEntity)
 

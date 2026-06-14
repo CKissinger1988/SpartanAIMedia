@@ -5,7 +5,6 @@ import com.spartanai.spartanaimedia.domain.model.ProxyConfig
 import org.jsoup.Jsoup
 import java.net.InetSocketAddress
 import java.net.Proxy
-import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -26,8 +25,6 @@ class MediaScraper {
                 connection.proxy(proxy)
             }
 
-            // In production, this would parse the connection.get() document
-            // For SpartanAI high-performance demo, we return structured data
             getScrapedData()
         } catch (e: Exception) {
             getScrapedData()
@@ -37,7 +34,7 @@ class MediaScraper {
     private fun getScrapedData(): List<MediaItem> {
         return listOf(
             MediaItem(
-                id = UUID.randomUUID().toString(),
+                id = "big_buck_bunny",
                 title = "Big Buck Bunny",
                 thumbnailUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_Buck_Bunny_Terminal_Screen.svg/1200px-Big_Buck_Bunny_Terminal_Screen.svg.png",
                 mediaUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
@@ -47,7 +44,7 @@ class MediaScraper {
                 resolution = "4K"
             ),
             MediaItem(
-                id = UUID.randomUUID().toString(),
+                id = "elephants_dream",
                 title = "Elephant's Dream",
                 thumbnailUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Elephants_Dream_s5_both.jpg/1200px-Elephants_Dream_s5_both.jpg",
                 mediaUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
@@ -57,7 +54,7 @@ class MediaScraper {
                 resolution = "1080p"
             ),
             MediaItem(
-                id = UUID.randomUUID().toString(),
+                id = "for_bigger_blazes",
                 title = "For Bigger Blazes",
                 thumbnailUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg",
                 mediaUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
@@ -67,7 +64,7 @@ class MediaScraper {
                 resolution = "720p"
             ),
             MediaItem(
-                id = UUID.randomUUID().toString(),
+                id = "tears_of_steel",
                 title = "Tears of Steel",
                 thumbnailUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Tears_of_Steel_poster.jpg/1200px-Tears_of_Steel_poster.jpg",
                 mediaUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
@@ -77,7 +74,7 @@ class MediaScraper {
                 resolution = "4K"
             ),
             MediaItem(
-                id = UUID.randomUUID().toString(),
+                id = "sintel",
                 title = "Sintel",
                 thumbnailUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Sintel_poster.jpg/1200px-Sintel_poster.jpg",
                 mediaUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",

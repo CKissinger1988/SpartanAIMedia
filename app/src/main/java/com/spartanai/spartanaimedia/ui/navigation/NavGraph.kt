@@ -4,70 +4,75 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.spartanai.spartanaimedia.ui.media.*
-import java.net.URLEncoder
+import org.koin.androidx.compose.koinViewModel
+import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
-
-sealed class Screen(val route: String) {
-    object Home : Screen("home")
-    object Downloads : Screen("downloads")
-    object Profiles : Screen("profiles")
-    object Player : Screen("player/{mediaUrl}/{title}") {
-        fun createRoute(mediaUrl: String, title: String): String {
-            val encodedUrl = URLEncoder.encode(mediaUrl, StandardCharsets.UTF_8.toString())
-            val encodedTitle = URLEncoder.encode(title, StandardCharsets.UTF_8.toString())
-            return "player/$encodedUrl/$encodedTitle"
-        }
-    }
-}
 
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    viewModel: MediaViewModel
+    startDestination: String = "onboarding"
 ) {
+    val viewModel: MediaViewModel = koinViewModel()
+
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = startDestination
     ) {
-        composable(Screen.Home.route) {
+        composable("onboarding") {
+            OnboardingScreen(
+                viewModel = viewModel,
+                onComplete = {
+                    navController.navigate("home") {
+                        popUpTo("onboarding") { inclusive = true }
+                    }
+                }
+            )
+        }
+        
+        composable("home") {
             HomeScreen(
                 viewModel = viewModel,
                 onMediaClick = { item ->
-                    navController.navigate(Screen.Player.createRoute(item.mediaUrl, item.title))
+                    navController.navigate("player/${item.mediaUrl}/${item.title}")
                 },
-                onDownloadsClick = { navController.navigate(Screen.Downloads.route) },
-                onProfilesClick = { navController.navigate(Screen.Profiles.route) }
+                onDownloadsClick = {
+                    navController.navigate("downloads")
+                },
+                onProfilesClick = {
+                    navController.navigate("profiles")
+                }
             )
         }
-        composable(Screen.Downloads.route) {
+
+        composable("player/{url}/{title}") { backStackEntry ->
+            val url = backStackEntry.arguments?.getString("url") ?: ""
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val decodedUrl = URLDecoder.decode(url, StandardCharsets.UTF_8.toString())
+            val decodedTitle = URLDecoder.decode(title, StandardCharsets.UTF_8.toString())
+            
+            PlayerScreen(
+                viewModel = viewModel,
+                mediaUrl = decodedUrl,
+                title = decodedTitle,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("downloads") {
             DownloadsScreen(
                 viewModel = viewModel,
                 onMediaClick = { item ->
-                    navController.navigate(Screen.Player.createRoute(item.mediaUrl, item.title))
+                    navController.navigate("player/${item.mediaUrl}/${item.title}")
                 },
                 onBack = { navController.popBackStack() }
             )
         }
-        composable(Screen.Profiles.route) {
+
+        composable("profiles") {
             ProfilesScreen(
                 viewModel = viewModel,
-                onBack = { navController.popBackStack() }
-            )
-        }
-        composable(
-            route = Screen.Player.route,
-            arguments = listOf(
-                navArgument("mediaUrl") { type = androidx.navigation.NavType.StringType },
-                navArgument("title") { type = androidx.navigation.NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val mediaUrl = backStackEntry.arguments?.getString("mediaUrl") ?: ""
-            val title = backStackEntry.arguments?.getString("title") ?: ""
-            PlayerScreen(
-                mediaUrl = mediaUrl,
-                title = title,
                 onBack = { navController.popBackStack() }
             )
         }

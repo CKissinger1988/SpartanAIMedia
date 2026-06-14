@@ -2,10 +2,7 @@ package com.spartanai.spartanaimedia.di
 
 import androidx.room.Room
 import com.spartanai.spartanaimedia.data.local.MediaDatabase
-import com.spartanai.spartanaimedia.data.remote.MediaDownloadManager
-import com.spartanai.spartanaimedia.data.remote.MediaScraper
-import com.spartanai.spartanaimedia.data.remote.PiBlockchainManager
-import com.spartanai.spartanaimedia.data.remote.PiNodeService
+import com.spartanai.spartanaimedia.data.remote.*
 import com.spartanai.spartanaimedia.data.repository.MediaRepositoryImpl
 import com.spartanai.spartanaimedia.domain.repository.MediaRepository
 import com.spartanai.spartanaimedia.ui.media.MediaViewModel
@@ -39,6 +36,12 @@ val appModule = module {
     singleOf(::MediaScraper)
     singleOf(::PiBlockchainManager)
     singleOf(::PiNodeService)
+    singleOf(::UpdateManager)
+    singleOf(::PreloadManager)
+    singleOf(::SearchSuggestionManager)
+    singleOf(::RecommendationEngine)
+    singleOf(::P2PManager)
+    singleOf(::MediaSyncManager)
     singleOf(::MediaRepositoryImpl) { bind<MediaRepository>() }
     viewModelOf(::MediaViewModel)
 }
