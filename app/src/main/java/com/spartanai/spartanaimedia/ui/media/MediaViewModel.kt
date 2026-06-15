@@ -230,6 +230,8 @@ class MediaViewModel(
     }
 
     fun loginWithPi() {
+        // Feature disabled for later integration
+        /*
         viewModelScope.launch {
             piBlockchainManager.authenticate()
             piBlockchainManager.piAuthState.collectLatest { result ->
@@ -239,14 +241,18 @@ class MediaViewModel(
                 }
             }
         }
+        */
     }
 
     fun togglePiNode(isActive: Boolean) {
+        // Feature disabled for later integration
+        /*
         val userId = uiState.value.selectedProfile?.userId ?: return
         viewModelScope.launch {
             repository.setPiNodeActive(userId, isActive)
             if (isActive) p2pManager.startP2P() else p2pManager.stopP2P()
         }
+        */
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -267,12 +273,16 @@ class MediaViewModel(
         viewModelScope.launch {
             repository.selectProfile(profile.userId)
             // Properly handle side-effects on profile selection
+            /* Pi Node disabled for later integration
             piNodeService.setNodeActive(profile.isPiNodeActive)
             if (profile.isPiNodeActive) {
                 p2pManager.startP2P()
             } else {
                 p2pManager.stopP2P()
             }
+            */
+            // P2P should still be active for sharing even without Pi Node
+            p2pManager.startP2P()
         }
     }
 

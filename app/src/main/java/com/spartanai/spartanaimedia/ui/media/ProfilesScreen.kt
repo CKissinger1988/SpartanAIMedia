@@ -200,6 +200,15 @@ fun ProfileItem(
                         )
                     }
                 }
+                /* Pi Node status disabled for later integration
+                if (profile.isPiNodeActive) {
+                    Text(
+                        text = "Pi Node Active",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                */
             }
             if (isSelected) {
                 Icon(

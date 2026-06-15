@@ -188,7 +188,7 @@ fun HomeScreen(
                     }
                 }
 
-                // Nearby Spartans (P2P Discovery)
+                // Nearby Spartans (P2P Discovery) - Keeping active for P2P sharing as it's separate from Pi Node
                 if (uiState.selectedCategory == "All" && uiState.nearbyPeers.isNotEmpty() && uiState.searchQuery.isEmpty()) {
                     item {
                         SectionHeader("Nearby Spartans")
