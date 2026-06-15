@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    
+    <!-- Cache Kill Switch -->
+    <script src="/assets/js/cache-kill-switch.js"></script>
+
+    <!-- NO CACHE  -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>Home - Explore Thousands of Movies & Series | WatchSeries</title>
+
+    <meta name="description"
+        content="Start exploring our vast library of movies and TV series. Find new releases, popular titles, and browse by genre on WatchSeries." />
+    <meta name="keywords"
+        content="watch movies online, free movies, TV series, streaming, HD movies, latest releases, WatchSeries" />
+
+    <link rel="canonical" href="https://watchseries.bar/home" />
+
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Home - Explore Thousands of Movies & Series | WatchSeries">
+    <meta property="og:description"
+        content="Start exploring our vast library of movies and TV series. Find new releases, popular titles, and browse by genre on WatchSeries." />
+    <meta property="og:url" content="https://watchseries.bar/home" />
+    <meta property="og:site_name" content="WatchSeries" />
+    <meta property="og:image" content="https://watchseries.bar/assets/img/watchseries-home.webp" />
+    <meta property="og:image:width" content="1920">
+    <meta property="og:image:height" content="1000">
+    <meta property="og:image:type" content="image/webp" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Home - Explore Thousands of Movies & Series | WatchSeries">
+    <meta name="twitter:description"
+        content="Start exploring our vast library of movies and TV series. Find new releases, popular titles, and browse by genre on WatchSeries." />
+    <meta name="twitter:image" content="/assets/img/watchseries-home.webp" />
+
+    <link href="/assets/img/cropped-favicon-32x32.webp" rel="icon" sizes="32x32" />
+    <link href="/assets/img/cropped-favicon-192x192.webp" rel="icon" sizes="192x192" />
+    <link href="/assets/img/cropped-favicon-180x180.webp" rel="apple-touch-icon" />
+    <meta content="/assets/img/cropped-favicon-270x270.webp" name="msapplication-TileImage" />
+
+    <!-- DNS Prefetch & Preconnect for performance -->
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    
+    
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="/assets/img/logo.webp" as="image" fetchpriority="high">
+
+    <!-- jQuery is critical and must be loaded synchronously in the head -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <!-- Load main stylesheet synchronously -->
+    <link rel="stylesheet" href="/assets/css/style.css?v=0.0.4" fetchpriority="high">
+
+    <!-- Load Fonts Asynchronously -->
+    <style type="text/css">@font-face {font-family:Poppins;font-style:normal;font-weight:300;src:url(/cf-fonts/s/poppins/5.2.7/devanagari/300/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF,U+11B00-11B09;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:300;src:url(/cf-fonts/s/poppins/5.2.7/latin-ext/300/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:300;src:url(/cf-fonts/s/poppins/5.2.7/latin/300/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:400;src:url(/cf-fonts/s/poppins/5.2.7/latin-ext/400/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:400;src:url(/cf-fonts/s/poppins/5.2.7/devanagari/400/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF,U+11B00-11B09;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:400;src:url(/cf-fonts/s/poppins/5.2.7/latin/400/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:500;src:url(/cf-fonts/s/poppins/5.2.7/latin-ext/500/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:500;src:url(/cf-fonts/s/poppins/5.2.7/devanagari/500/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF,U+11B00-11B09;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:500;src:url(/cf-fonts/s/poppins/5.2.7/latin/500/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:600;src:url(/cf-fonts/s/poppins/5.2.7/devanagari/600/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF,U+11B00-11B09;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:600;src:url(/cf-fonts/s/poppins/5.2.7/latin/600/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:600;src:url(/cf-fonts/s/poppins/5.2.7/latin-ext/600/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:700;src:url(/cf-fonts/s/poppins/5.2.7/devanagari/700/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF,U+11B00-11B09;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:700;src:url(/cf-fonts/s/poppins/5.2.7/latin/700/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:700;src:url(/cf-fonts/s/poppins/5.2.7/latin-ext/700/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:900;src:url(/cf-fonts/s/poppins/5.2.7/devanagari/900/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF,U+11B00-11B09;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:900;src:url(/cf-fonts/s/poppins/5.2.7/latin/900/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:900;src:url(/cf-fonts/s/poppins/5.2.7/latin-ext/900/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:italic;font-weight:400;src:url(/cf-fonts/s/poppins/5.2.7/latin-ext/400/italic.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:italic;font-weight:400;src:url(/cf-fonts/s/poppins/5.2.7/devanagari/400/italic.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF,U+11B00-11B09;font-display:swap;}@font-face {font-family:Poppins;font-style:italic;font-weight:400;src:url(/cf-fonts/s/poppins/5.2.7/latin/400/italic.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}</style>
+    <noscript>
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900;1,400&amp;display=swap">
+    </noscript>
+
+    <!-- Defer Non-Critical CSS -->
+    <link rel="stylesheet" href="/assets/css/views.css?v=0.0.4" media="print"
+        onload="this.media='all';this.onload=null;">
+    <link rel="stylesheet" href="/assets/css/continue-watching.css?v=0.0.4" media="print"
+        onload="this.media='all';this.onload=null;">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@iconscout/unicons@4.0.8/css/line.min.css" media="print"
+        onload="this.media='all';this.onload=null;">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tooltipster/4.2.8/css/tooltipster.bundle.css"
+        media="print" onload="this.media='all';this.onload=null;">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.4/css/swiper.min.css" media="print"
+        onload="this.media='all';this.onload=null;">
+
+    <!-- جاوا اسکرپٹ کے بغیر براؤزرز کے لیے فال بیک -->
+    <noscript>
+        <link rel="stylesheet" href="/assets/css/style.css?v=0.0.4">
+        <link rel="stylesheet" href="/assets/css/views.css?v=0.0.4">
+        <link rel="stylesheet" href="/assets/css/continue-watching.css?v=0.0.4">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@iconscout/unicons@4.0.8/css/line.min.css">
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/tooltipster/4.2.8/css/tooltipster.bundle.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.4/css/swiper.min.css">
+    </noscript>
+
+    <!-- سائٹ نوٹس کے اسٹائلز -->
+    <link rel="stylesheet" href="/assets/css/site-notice.css?v=0.0.4">
+    <style>
+        /* Container styling */
+        #tolstoycomments-wrapper {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 14px;
+            background-color: #1a1c23;
+        }
+
+        /* Scaling the widget to reduce font size globally */
+        .tolstoy-tab-content {
+            transform: scale(0.85);
+            /* Scales down to 85% */
+            transform-origin: top left;
+            /* Keeps the widget aligned to the top-left */
+            width: 117.6%;
+            /* Offsets the scale (100 / 0.85) to fill the width */
+            margin-bottom: -50px;
+            margin-top: -13%;
+            /* Adjusts the layout space taken by the scaled element */
+        }
+
+        /* Hide the internal header by shifting content up */
+        #tolstoycomments-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tolstoy-tab-content {
+            overflow: hidden;
+        }
+
+        .tolstoy-tab-content iframe {
+            position: relative;
+            top: -60px;
+            margin-bottom: -60px;
+            min-height: 450px;
+        }
+
+        /* Fix per iPad/tablet - evita che il widget venga tagliato */
+        @media (min-width: 768px) and (max-width: 1366px) {
+            .tolstoy-tab-content {
+                padding-top: 60px;
+            }
+        }
+    </style>
+    
+    <!-- Schema.org JSON-LD for SEO and Rich Snippets -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "WebSite",
+                "@id": "https://watchseries.bar/#website",
+                "url": "https://watchseries.bar/",
+                "name": "WatchSeries",
+                "description": "Watch thousands of movies and TV series online in HD quality",
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": {
+                        "@type": "EntryPoint",
+                        "urlTemplate": "https://watchseries.bar/search/{search_term_string}"
+                    },
+                    "query-input": "required name=search_term_string"
+                }
+            },
+            {
+                "@type": "Organization",
+                "@id": "https://watchseries.bar/#organization",
+                "name": "WatchSeries",
+                "url": "https://watchseries.bar/",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://watchseries.bar/assets/img/cropped-favicon-270x270.webp",
+                    "width": 270,
+                    "height": 270
+                },
+                "sameAs": []
+            },
+            {
+                "@type": "WebPage",
+                "@id": "https://watchseries.bar/home#webpage",
+                "url": "https://watchseries.bar/home",
+                "name": "Home - Explore Thousands of Movies & Series | WatchSeries",
+                "isPartOf": {
+                    "@id": "https://watchseries.bar/#website"
+                },
+                "about": {
+                    "@id": "https://watchseries.bar/#organization"
+                },
+                "description": "Start exploring our vast library of movies and TV series. Find new releases, popular titles, and browse by genre on WatchSeries.",
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        {
+                            "@type": "ListItem",
+                            "position": 1,
+                            "name": "Home",
+                            "item": "https://watchseries.bar/home"
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "CollectionPage",
+                "@id": "https://watchseries.bar/home#collectionpage",
+                "url": "https://watchseries.bar/home",
+                "name": "Latest Movies & TV Shows",
+                "description": "Browse our collection of latest movies, TV shows, and anime"
+            }
+        ]
+    }
+    </script>
+    
+    <!-- 1 -->
+    <script>(function (s) { s.dataset.zone = '10906659', s.src = 'https://llvpn.com/tag.min.js' })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    <!-- 2 -->
+    <script>(function (s) { s.dataset.zone = '9916127', s.src = 'https://llvpn.com/tag.min.js' })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    
+</head>
+
+<body>
+    <div class="wrapper">
+        <header class="absolute">
+            <div class="container">
+                <div class="wrapper justify-content-between align-items-center">
+                    <div class="start d-flex">
+                        <div id="menu-toggler"><i class="uil uil-list-ui-alt"></i></div>
+                        <div id="menu">
+                            <ul>
+                                <li><a href="/home" data-i18n="nav.home">Home</a></li>
+                                <li><a href="/movies" data-i18n="nav.movies">Movies</a></li>
+                                <li><a href="/tv-series" data-i18n="nav.tvShows">TV Shows</a></li>
+                                <li><a href="/top-imdb" data-i18n="nav.topImdb">Top IMDB</a></li>
+                                <li><a href="/favorites" data-i18n="nav.favorites">Favorites</a></li>
+                            </ul>
+                        </div>
+                        <div class="logo">
+                            <a href="/home"><img src="/assets/img/logo.webp" alt="WatchSeries" loading="lazy" /></a>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div id="search">
+                            <button id="show-search" class="btn-header" aria-label="Toggle search">
+                                <i class="uil uil-search"></i>
+                            </button>
+                            <div id="search-wrapper">
+                                <form class="align-items-center" autocomplete="off">
+                                    <a class="filter-btn btn btn-sm" href="/filters">
+                                        <i class="uil uil-filter"></i> <span data-i18n="nav.filter">Filter</span>
+                                    </a>
+                                    <input type="text" data-i18n-placeholder="nav.searchPlaceholder"
+                                        placeholder="Search everything..." name="keyword"
+                                        aria-label="Search movies and TV shows">
+                                    <button type="button" aria-label="Submit search">
+                                        <i class="uil uil-search"></i>
+                                    </button>
+                                </form>
+                                <div class="search-suggest" role="listbox" aria-label="Search suggestions"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="end">
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main>
+            <div class="swiper" id="featured">
+                <div class="swiper-wrapper" data-trending-movies data-template="slider" data-limit="5"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-pagination"></div>
+            </div>
+            <!-- Site Notice - Types: info, warning, success, error -->
+            <div class="site-notice" data-notice-id="notice-2024-001" data-type="warning" hidden>
+                <span class="site-notice-icon"><i class="uil uil-info-circle"></i></span>
+                <span class="site-notice-content" data-i18n="notice.siteUpdate">
+                    We're currently updating the site. If you experience any issues, please try clearing your browser
+                    cache and cookies.
+                </span>
+                <button class="site-notice-close" aria-label="Close notice">
+                    <i class="uil uil-times"></i>
+                </button>
+            </div>
+            <div class="container">
+                <div class="aside-wrapper">
+                    <aside class="main">
+                        <div class="section">
+                            <div class="head">
+                                <div class="start">
+                                    <h1 class="title gardiently" data-i18n="home.recommended">Recommended</h1>
+                                    <div class="tabs" data-tabs data-id="recommended" data-persist="true">
+                                        <span class="tab active" data-name="movies" data-i18n="nav.movies">Movies</span>
+                                        <span class="tab" data-name="tv" data-i18n="nav.tvShows">TV Shows</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-content" data-name="movies">
+                                <div class="scaff movies items" id="recommended-movies" data-movie-discover
+                                    data-param-sort-by="popularity.desc" data-param-with-original-language="en"
+                                    data-param-primary_release_date.gte="2025-10-04" data-param-vote-count.gte="10"
+                                    data-param-vote-average.gte="5.5" data-template="grid" data-limit="7">
+                                </div>
+                            </div>
+                            <div class="tab-content" data-name="tv" style="display:none">
+                                <div class="scaff movies items" id="recommended-tv" data-tv-discover
+                                    data-param-sort-by="popularity.desc" data-param-with-original-language="en"
+                                    data-param-without-genres="16" data-param-without-keywords="210024"
+                                    data-param-vote-count.gte="50" data-param-vote-average.gte="6" data-template="grid"
+                                    data-limit="7"></div>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="head">
+                                <div class="start">
+                                    <h2 class="title gardiently" data-i18n="home.latestMovies">Latest Movies</h2>
+                                    <a href="/movies" class="view-more-link" aria-label="View all movies">
+                                        <span data-i18n="home.viewMore">View All</span>
+                                        <i class="uil uil-arrow-right"></i>
+                                    </a>
+                                </div>
+                                <div class="end">
+                                    <div class="btn-group pagination-control" role="group">
+                                        <button data-pagination-prev="latest-movies" class="btn btn-sm btn-primary"
+                                            aria-label="Go to previous page of latest movies" disabled><i
+                                                class="uil uil-angle-left"></i></button>
+                                        <button data-pagination-next="latest-movies" class="btn btn-sm btn-primary"
+                                            aria-label="Go to next page of latest movies"><i
+                                                class="uil uil-angle-right"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="scaff movies items" data-pagination="latest-movies" data-movie-discover
+                                data-param-sort_by="primary_release_date.desc"
+                                data-param-without_original_language="ja|ko|hi|zh|th|id|tl"
+                                data-param-with_origin_country="US|GB" data-param-vote_count.gte="50"
+                                data-template="grid" data-limit="14"></div>
+                        </div>
+                        <div class="section">
+                            <div class="head">
+                                <div class="start">
+                                    <h2 class="title gardiently" data-i18n="home.latestTvShows">Latest TV Shows</h2>
+                                    <a href="/tv-series" class="view-more-link" aria-label="View all TV shows">
+                                        <span data-i18n="home.viewMore">View All</span>
+                                        <i class="uil uil-arrow-right"></i>
+                                    </a>
+                                </div>
+                                <div class="end">
+                                    <div class="btn-group pagination-control" role="group">
+                                        <button data-pagination-prev="latest-tv" class="btn btn-sm btn-primary"
+                                            aria-label="Go to previous page of latest TV shows" disabled=""><i
+                                                class="uil uil-angle-left"></i></button>
+                                        <button data-pagination-next="latest-tv" class="btn btn-sm btn-primary"
+                                            aria-label="Go to next page of latest TV shows"><i
+                                                class="uil uil-angle-right"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="scaff movies items" data-pagination="latest-tv" data-tv-discover
+                                data-param-sort_by="popularity.desc" data-param-vote-count.gte="50"
+                                data-param-vote-average.gte="6.5" data-param-first_air_date.gte="2020-01-01"
+                                data-param-with_watch_providers="8|9|15|384|337|531|43|244|350|2"
+                                data-param-watch_region="US" data-param-without_keywords="210024,287501"
+                                data-param-without_original_language="ja|ko|hi|zh|th|id|tl"
+                                data-param-without_genres="16|10764|10766|10767"
+                                data-param-with_origin_country="US|GB|CA" data-template="grid" data-limit="14"></div>
+                        </div>
+                        <!--<div class="section">
+                            <div class="head">
+                                <div class="start">
+                                    <h2 class="title gardiently" data-i18n="home.latestAnime">Latest Anime</h2>
+                                </div>
+                                <div class="end">
+                                    <div class="btn-group pagination-control" role="group">
+                                        <button data-pagination-prev="latest-anime" class="btn btn-sm btn-primary"
+                                            aria-label="Go to previous page of latest Anime" disabled><i
+                                                class="uil uil-angle-left"></i></button>
+                                        <button data-pagination-next="latest-anime" class="btn btn-sm btn-primary"
+                                            aria-label="Go to next page of latest Anime"><i
+                                                class="uil uil-angle-right"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="scaff movies items" data-pagination="latest-anime" data-anime-discover
+                                data-template="grid" data-limit="14"></div>
+                        </div>-->
+                    </aside>
+                    <aside class="sidebar">
+                        <!-- Firebase Most Viewed -->
+                        <!--<div class="section">
+                            <div class="head">
+                                <div class="start">
+                                    <h2 class="title gardiently" data-i18n="home.mostViewed">Most Viewed</h2>
+                                    <div class="tabs" data-tabs>
+                                        <span class="tab active" data-name="day" data-i18n="home.day">Day</span>
+                                        <span class="tab" data-name="week" data-i18n="home.week">Week</span>
+                                        <span class="tab" data-name="month" data-i18n="home.month">Month</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="body">
+                                <div class="tab-content scaff movie-sidebar items" data-name="day"
+                                    style="display:block">
+                                    <div class="loading"></div>
+                                </div>
+
+                                <div class="tab-content scaff movie-sidebar items" data-name="week"
+                                    style="display:none">
+                                    <div class="loading"></div>
+                                </div>
+
+                                <div class="tab-content scaff movie-sidebar items" data-name="month"
+                                    style="display:none">
+                                    <div class="loading"></div>
+                                </div>
+                            </div>
+                        </div>-->
+
+                        <div class="section">
+                            <div class="head">
+                                <div class="start">
+                                    <h2 class="title gardiently" data-i18n="home.recentlyUpdated">Recently Updated</h2>
+                                </div>
+                                <div class="end">
+                                    <div class="btn-group pagination-control sidebar-slider-control" role="group">
+                                        <button id="recently-updated-prev" class="btn btn-sm btn-primary"
+                                            aria-label="Scroll up"><i class="uil uil-angle-up"></i></button>
+                                        <button id="recently-updated-next" class="btn btn-sm btn-primary"
+                                            aria-label="Scroll down"><i class="uil uil-angle-down"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="body recently-updated-scrollable">
+                                <div class="scaff movie-sidebar items" data-movie-upcoming data-template="sidebar"
+                                    data-limit="20"></div>
+                            </div>
+                        </div>
+                        <div class="section" id="tolstoy-miniwidget-section">
+                            <div class="head">
+                                <div class="start">
+                                    <h2 class="title gardiently" data-i18n="home.mostCommented">Most Commented</h2>
+                                    <div class="tabs" id="tolstoy-interval-tabs">
+                                        <span class="tab active" data-name="month" data-i18n="home.month">Month</span>
+                                        <span class="tab" data-name="week" data-i18n="home.week">Week</span>
+                                        <span class="tab" data-name="day" data-i18n="home.day">Day</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="body">
+                                <script type="text/javascript">
+                                    !(function (w, d, s, l, x) {
+                                        w[l] = w[l] || [];
+                                        w[l].t = w[l].t || new Date().getTime();
+                                        var f = d.getElementsByTagName(s)[0], j = d.createElement(s);
+                                        j.async = !0;
+                                        j.src = '//web.tolstoycomments.com/sitejs/app.js?i=' + l + '&x=' + x + '&t=' + w[l].t;
+                                        f.parentNode.insertBefore(j, f);
+                                    })(window, document, 'script', 'tolstoycomments', '6762');
+                                </script>
+
+                                <!-- Set theme BEFORE creating miniwidget -->
+                                <script type="text/javascript">
+                                    window['tolstoycomments'] = window['tolstoycomments'] || [];
+                                    window['tolstoycomments'].push({
+                                        action: 'init',
+                                        values: {
+                                            theme: {
+                                                colorBlackDark: "#ffffff",
+                                                colorBlackMiddle: "#6c757d",
+                                                colorBlackLight: "#1e2129",
+                                                colorBlack: "#ffffff",
+                                                colorMainDark: "#db6937",
+                                                colorMainMiddleDark: "#6c757d",
+                                                colorMain: "#e9ecef",
+                                                colorMainMiddle: "#3a3f42",
+                                                colorMainLight: "#1e2129",
+                                                colorAlert: "#dc3545",
+                                                colorBackground: "#1a1c23",
+                                            },
+                                            success: function () {
+                                                
+                                            }
+                                        }
+                                    });
+                                </script>
+
+                                <div id="tolstoycomments-wrapper">
+                                    <div id="tolstoycomments-month" class="tolstoy-tab-content" style="display:block">
+                                    </div>
+                                    <div id="tolstoycomments-week" class="tolstoy-tab-content" style="display:none">
+                                    </div>
+                                    <div id="tolstoycomments-day" class="tolstoy-tab-content" style="display:none">
+                                    </div>
+                                </div>
+
+                                <script type="text/javascript">
+                                    window["tolstoycomments"] = window["tolstoycomments"] || [];
+                                    // Month widget (default)
+                                    window["tolstoycomments"].push({
+                                        action: "miniwidget",
+                                        values: {
+                                            id: "tolstoycomments-month",
+                                            key: "b5fb0dd5d2914c3985b0ab881b72593b",
+                                            type: "chattop",
+                                            take: 5,
+                                            interval: "month",
+                                            title: ""
+                                        }
+                                    });
+                                    // Week widget
+                                    window["tolstoycomments"].push({
+                                        action: "miniwidget",
+                                        values: {
+                                            id: "tolstoycomments-week",
+                                            key: "b5fb0dd5d2914c3985b0ab881b72593b",
+                                            type: "chattop",
+                                            take: 5,
+                                            interval: "week",
+                                            title: ""
+                                        }
+                                    });
+                                    // Day widget
+                                    window["tolstoycomments"].push({
+                                        action: "miniwidget",
+                                        values: {
+                                            id: "tolstoycomments-day",
+                                            key: "b5fb0dd5d2914c3985b0ab881b72593b",
+                                            type: "chattop",
+                                            take: 5,
+                                            interval: "day",
+                                            title: ""
+                                        }
+                                    });
+                                </script>
+
+                                <script type="text/javascript">
+                                    // Simple CSS tab switching
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        var tabs = document.querySelectorAll('#tolstoy-interval-tabs .tab');
+                                        tabs.forEach(function (tab) {
+                                            tab.addEventListener('click', function () {
+                                                var interval = this.getAttribute('data-name');
+
+                                                // Update active tab
+                                                tabs.forEach(function (t) { t.classList.remove('active'); });
+                                                this.classList.add('active');
+
+                                                // Show/hide content
+                                                document.querySelectorAll('.tolstoy-tab-content').forEach(function (c) {
+                                                    c.style.display = 'none';
+                                                });
+                                                document.getElementById('tolstoycomments-' + interval).style.display = 'block';
+                                            });
+                                        });
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </main>
+        <div class="container">
+            <div class="footer">
+                <div class="logo w-100 d-flex justify-content-center py-4">
+                    <img src="/assets/img/logo.webp" alt="WatchSeries" loading="lazy">
+                </div>
+                <div class="f-top">
+                    <div class="f-top-inner">
+                        <ul>
+                            <li><a href="/movies" data-i18n="nav.movies">Movies</a></li>
+                            <li><a href="/tv-series" data-i18n="nav.tvShows">TV Series</a></li>
+                            <li><a href="/top-imdb" data-i18n="nav.topImdb">Top IMDB</a></li>
+                        </ul>
+                        <div class="f-wrapper">
+                            <p class="f-desc" data-i18n="footer.description">WatchSeries - Your destination for free
+                                movie streaming online. Watch
+                                movies online for
+                                free, anytime, anywhere. Explore our vast collection and experience cinematic wonders at
+                                your
+                                fingertips.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="f-bottom">
+                    <div class="text-absolute" data-i18n="footer.disclaimer">This site does not store any files on our
+                        server, we only linked to the
+                        media which
+                        is hosted on 3rd party services.</div>
+                    <ul>
+                        <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+                        <li><a href="/request" data-i18n="nav.request">Request</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Non-Critical Scripts - Load with defer for better performance -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.1/lazysizes.min.js" async></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.1/plugins/bgset/ls.bgset.min.js" async></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"
+        defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tooltipster/4.2.8/js/tooltipster.bundle.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.4/js/swiper.min.js" defer></script>
+
+    <!-- Firebase Scripts -->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js" defer></script>-->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"
+        defer></script>-->
+
+    <!-- Application Scripts -->
+    <script src="/assets/js/keys.js?v=0.0.4"></script>
+    <script src="/assets/js/app.bundle.js?v=0.0.4" defer></script>
+    <script src="/assets/js/dropdown.js?v=0.0.4" defer></script>
+    <script src="/assets/js/i18n.js?v=0.0.4" defer></script>
+    <script src="/assets/js/favorites.js?v=0.0.4" defer></script>
+    <!--<script src="/assets/js/firebase-init.js?v=0.0.4" defer></script>-->
+    <script src="/assets/js/progress.js?v=0.0.4" defer></script>
+    <script src="/assets/js/continue-watching.js?v=0.0.4" defer></script>
+    <!--<script src="/assets/js/firebase-views.js?v=0.0.4" defer></script>-->
+
+    <!-- DMCA Content Filter -->
+    <!--<script src="/assets/js/dmca-filter.js?v=0.0.4" defer></script>-->
+
+    <!-- Site Notice -->
+    <script src="/assets/js/site-notice.js?v=0.0.4" defer></script>
+
+    <!-- Recently Updated Slider -->
+    <script>
+        (function () {
+            let currentIndex = 0;
+            let itemHeight = 130; // Approximate height of each sidebar item
+            let itemsContainer = null;
+            let totalItems = 0;
+            let visibleItems = 5;
+
+            function initRecentlyUpdatedSlider() {
+                const scrollContainer = document.querySelector('.recently-updated-scrollable');
+                const prevBtn = document.getElementById('recently-updated-prev');
+                const nextBtn = document.getElementById('recently-updated-next');
+                itemsContainer = document.querySelector('.recently-updated-scrollable .scaff.movie-sidebar.items');
+
+                if (!scrollContainer || !prevBtn || !nextBtn || !itemsContainer) {
+                    return;
+                }
+
+                totalItems = itemsContainer.children.length;
+
+                // Calculate actual item height from first item
+                if (totalItems > 0) {
+                    const firstItem = itemsContainer.children[0];
+                    const computedStyle = window.getComputedStyle(firstItem);
+                    itemHeight = firstItem.offsetHeight + parseFloat(computedStyle.marginTop) + parseFloat(computedStyle.marginBottom);
+                }
+
+                function updateSliderPosition() {
+                    const translateY = -(currentIndex * itemHeight);
+                    itemsContainer.style.transform = `translateY(${translateY}px)`;
+                }
+
+                function updateButtons() {
+                    prevBtn.disabled = currentIndex === 0;
+                    nextBtn.disabled = currentIndex >= totalItems - visibleItems;
+                }
+
+                prevBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (currentIndex > 0) {
+                        currentIndex--;
+                        updateSliderPosition();
+                        updateButtons();
+                    }
+                });
+
+                nextBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (currentIndex < totalItems - visibleItems) {
+                        currentIndex++;
+                        updateSliderPosition();
+                        updateButtons();
+                    }
+                });
+
+                // Initial state
+                updateButtons();
+            }
+
+            // Wait for content to be loaded
+            function waitForContent() {
+                const checkInterval = setInterval(() => {
+                    const container = document.querySelector('.recently-updated-scrollable .scaff.movie-sidebar.items');
+                    if (container && container.children.length > 0) {
+                        clearInterval(checkInterval);
+                        // Wait a bit more for styles to be applied
+                        setTimeout(initRecentlyUpdatedSlider, 1000);
+                    }
+                }, 500);
+
+                setTimeout(() => {
+                    clearInterval(checkInterval);
+                }, 30000);
+            }
+
+            // Start when page is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', waitForContent);
+            } else {
+                waitForContent();
+            }
+        })();
+    </script>
+
+<!-- Histats.com  START  (aync)-->
+<script type="text/javascript">var _Hasync= _Hasync|| [];
+_Hasync.push(['Histats.start', '1,4941825,4,0,0,0,00010000']);
+_Hasync.push(['Histats.fasi', '1']);
+_Hasync.push(['Histats.track_hits', '']);
+(function() {
+var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;
+hs.src = ('//s10.histats.com/js15_as.js');
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
+})();</script>
+<noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?4941825&101" alt="وزٹ کاؤنٹر" border="0"></a></noscript>
+<!-- Histats.com  END  -->
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"6739ee54e4494a2081979d0b6b78042f","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+
+</html>
