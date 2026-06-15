@@ -37,6 +37,10 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import coil3.compose.AsyncImage
 import com.spartanai.spartanaimedia.MainActivity
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.ResolvingDataSource
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import com.spartanai.spartanaimedia.data.remote.AdBlocker
 import com.spartanai.spartanaimedia.data.remote.SyncEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -72,7 +76,24 @@ fun PlayerScreen(
     var activeReactions by remember { mutableStateOf(listOf<ActiveReaction>()) }
 
     val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
+        ExoPlayer.Builder(context)
+            .setMediaSourceFactory(
+                DefaultMediaSourceFactory(context)
+                    .setDataSourceFactory(
+                        ResolvingDataSource.Factory(
+                            DefaultDataSource.Factory(context),
+                            ResolvingDataSource.Resolver { dataSpec -> 
+                                if (AdBlocker.isAd(dataSpec.uri)) {
+                                    // Block the ad by resolving to an invalid dummy URI
+                                    dataSpec.buildUpon().setUri(android.net.Uri.parse("dummy://ad-blocked")).build()
+                                } else {
+                                    dataSpec
+                                }
+                            }
+                        )
+                    )
+            )
+            .build().apply {
             setMediaItem(MediaItem.fromUri(mediaUrl))
             seekTo(initialPosition)
             prepare()
