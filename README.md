@@ -1,15 +1,16 @@
 # SpartanAI Media
 
-SpartanAI Media is a high-performance, ad-free streaming application built on modern Android principles. Designed with zero technical debt and adhering strictly to Clean Architecture, it delivers a premium, secure, and privacy-first media experience.
+SpartanAI Media is a high-performance, ad-free streaming application built on modern Android principles. Designed with zero technical debt and adhering strictly to Clean Architecture, it delivers a premium, secure, and absolute privacy-first media experience.
 
 ## Core Features
 
 - **Ad-Free Streaming Engine:** Utilizing `ExoPlayer` wrapped with a custom `ResolvingDataSource`, the app intercepts and blocks known ad-serving domains and trackers at the network level, ensuring pristine, uninterrupted playback.
-- **P2P Encrypted Beaming:** Uses Android `NsdManager` for local peer discovery and raw TCP sockets with AES-GCM encryption to beam downloaded media files securely between devices without internet access.
+- **100% Untraceable Downloads:** Completely bypasses the Android system `DownloadManager`. Media chunks are streamed securely via an OkHttp coroutine pipeline, saved as obfuscated binary `.blob` files in isolated, non-exported internal app storage (`filesDir`), and user-agents are spoofed to prevent system and network fingerprinting.
+- **Tor & Proxychains Support:** Route all application traffic—including metadata scraping and untraceable downloads—through SOCKS5 or HTTP proxies, with native support for Tor networks via Orbot (port 9050).
+- **P2P Encrypted Beaming:** Uses Android `NsdManager` for local peer discovery and raw TCP sockets with AES-GCM encryption to beam downloaded media files securely between devices without internet access, complete with real-time transfer progress.
 - **Watch Party Sync:** A real-time, WebSocket-powered synchronized playback experience. Users can join virtual rooms, sync video playback, send messages, and share animated emoji reactions.
 - **Intelligent Recommendations:** An AI-powered, history-aware recommendation engine that dynamically updates the "More Like This" shelves based on user interaction progress and genre affinities.
-- **Biometric Security & Anonymous Profiles:** Protects sensitive watch history and downloads using device biometrics (`BIOMETRIC_STRONG`). Users can create "Anonymous Shadow" profiles that silo downloads to private app storage and spoof User-Agent headers.
-- **Zero-Debt Architecture:** Built entirely with Kotlin 2.x, Jetpack Compose, Koin (DI), and Room (Flow-based), following strict SOLID and MVI/MVM principles.
+- **Biometric Security & Anonymous Profiles:** Protects sensitive watch history and downloads using device biometrics (`BIOMETRIC_STRONG`). Users can create "Anonymous Shadow" profiles that silo downloads and network configurations independently.
 
 ## Getting Started
 
