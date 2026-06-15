@@ -40,6 +40,9 @@ fun NavGraph(
                 onDownloadsClick = {
                     navController.navigate("downloads")
                 },
+                onWatchlistClick = {
+                    navController.navigate("watchlist")
+                },
                 onProfilesClick = {
                     navController.navigate("profiles")
                 }
@@ -87,6 +90,16 @@ fun NavGraph(
                 viewModel = viewModel,
                 onMediaClick = { item ->
                     navController.navigate("player/${item.mediaUrl}/${item.title}")
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("watchlist") {
+            WatchlistScreen(
+                viewModel = viewModel,
+                onMediaClick = { item ->
+                    navController.navigate("details/${item.mediaUrl}/${item.title}")
                 },
                 onBack = { navController.popBackStack() }
             )

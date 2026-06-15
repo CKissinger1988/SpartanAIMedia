@@ -30,6 +30,7 @@ fun HomeScreen(
     viewModel: MediaViewModel,
     onMediaClick: (MediaItem) -> Unit,
     onDownloadsClick: () -> Unit,
+    onWatchlistClick: () -> Unit,
     onProfilesClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -68,6 +69,9 @@ fun HomeScreen(
                         actions = {
                             IconButton(onClick = { isSearchActive = true }) {
                                 Icon(Icons.Default.Search, contentDescription = "Search")
+                            }
+                            IconButton(onClick = onWatchlistClick) {
+                                Icon(Icons.Default.Bookmarks, contentDescription = "Watchlist")
                             }
                             IconButton(onClick = onDownloadsClick) {
                                 Icon(Icons.Default.FileDownload, contentDescription = "Downloads")

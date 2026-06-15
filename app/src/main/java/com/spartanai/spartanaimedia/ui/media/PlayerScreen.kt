@@ -6,6 +6,8 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -139,7 +141,23 @@ fun PlayerScreen(
 
     Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         AndroidView(
-            modifier = Modifier.fillMaxSize().clickable { showControls = !showControls },
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = { showControls = !showControls },
+                        onDoubleTap = { offset ->
+                            val width = size.width
+                            if (offset.x > width / 2) {
+                                // Double tap on right side -> forward 10s
+                                exoPlayer.seekForward()
+                            } else {
+                                // Double tap on left side -> rewind 10s
+                                exoPlayer.seekBack()
+                            }
+                        }
+                    )
+                },
             factory = {
                 PlayerView(context).apply {
                     player = exoPlayer
