@@ -1,28 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+
+    <!-- Glowing Data Stream Plume (Cyber Cyan) -->
+    <path
+        android:fillColor="#00F2FF"
+        android:pathData="M48,15 L60,15 L60,25 L48,25 Z M42,18 L46,18 L46,28 L42,28 Z M62,18 L66,18 L66,28 L62,28 Z" />
     
-    <!-- Stylized Spartan Helmet Plume -->
-    <path
-        android:fillColor="#FFD700"
-        android:pathData="M54,18 C64,18 72,25 72,35 L36,35 C36,25 44,18 54,18 Z" />
-        
-    <!-- Main Helmet Shell -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M54,30 C38,30 25,43 25,59 C25,75 54,90 54,90 C54,90 83,75 83,59 C83,43 70,30 54,30 Z" />
+    <path android:pathData="M40,25 L68,25 L68,35 L40,35 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="40"
+                android:startY="25"
+                android:endX="40"
+                android:endY="35"
+                android:type="linear">
+                <item android:offset="0" android:color="#00F2FF" />
+                <item android:offset="1" android:color="#008080" />
+            </gradient>
+        </aapt:attr>
+    </path>
 
-    <!-- Eye Slit / T-Shape (AI/Digital Look) -->
+    <!-- Geometric Low-Poly Helmet (Metallic Silver) -->
     <path
-        android:fillColor="#0A0F1E"
-        android:pathData="M51,45 L57,45 L57,75 L51,75 Z M35,52 L73,52 L73,58 L35,58 Z" />
+        android:fillColor="#E0E0E0"
+        android:pathData="M54,30 L28,45 L28,70 L40,85 L54,95 L68,85 L80,70 L80,45 Z" />
+    
+    <!-- Face Plate Shadows/Detail -->
+    <path
+        android:fillColor="#C0C0C0"
+        android:pathData="M54,30 L80,45 L80,70 L54,95 Z" />
 
-    <!-- Integrated Play Symbol in the slit -->
+    <!-- AI Core Eye Slit (Dark space with Glow) -->
     <path
-        android:fillColor="#FFD700"
-        android:pathData="M52,50 L58,55 L52,60 Z" />
+        android:fillColor="#050505"
+        android:pathData="M38,55 L70,55 L70,65 L54,80 L38,65 Z" />
+    
+    <!-- Glowing AI Lens / Iris -->
+    <path
+        android:fillColor="#00F2FF"
+        android:pathData="M51,60 L57,60 L57,64 L51,64 Z" />
+
+    <!-- Sharp Lambda Accents (Circuit style) -->
+    <path
+        android:strokeColor="#00F2FF"
+        android:strokeWidth="1"
+        android:pathData="M35,50 L54,35 L73,50" />
 
 </vector>
