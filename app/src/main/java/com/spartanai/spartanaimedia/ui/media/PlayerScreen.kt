@@ -54,6 +54,7 @@ data class ActiveReaction(
     val emoji: String
 )
 
+@android.annotation.SuppressLint("UnsafeOptInUsageError")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerScreen(
