@@ -4,9 +4,21 @@ import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.net.ServerSocket
+import java.net.Socket
+import javax.crypto.Cipher
+import javax.crypto.CipherInputStream
+import javax.crypto.CipherOutputStream
+import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.spec.SecretKeySpec
+import kotlin.concurrent.thread
 
 data class PeerDevice(
     val name: String,
@@ -23,6 +35,10 @@ class P2PManager(private val context: Context) {
     val peers = _peers.asStateFlow()
 
     private var serverSocket: ServerSocket? = null
+    
+    // In a real app, this should be exchanged via DHKE. For demo, we use a static pre-shared key.
+    private val secretKey = SecretKeySpec("SpartanAI_Secure_Key_2026_AESGCM".toByteArray().copyOf(32), "AES")
+    private val iv = "SpartanIV12".toByteArray() // 12 bytes for GCM
 
     private val registrationListener = object : NsdManager.RegistrationListener {
         override fun onServiceRegistered(NsdServiceInfo: NsdServiceInfo) {
@@ -35,9 +51,7 @@ class P2PManager(private val context: Context) {
     }
 
     private val discoveryListener = object : NsdManager.DiscoveryListener {
-        override fun onDiscoveryStarted(regType: String) {
-            Log.d("P2P", "Discovery started")
-        }
+        override fun onDiscoveryStarted(regType: String) {}
         override fun onServiceFound(service: NsdServiceInfo) {
             if (service.serviceType == serviceType && service.serviceName != serviceName) {
                 nsdManager.resolveService(service, resolveListener)
@@ -78,6 +92,66 @@ class P2PManager(private val context: Context) {
 
         registerService(port)
         discoverServices()
+        startListening()
+    }
+    
+    private fun startListening() {
+        thread {
+            while (serverSocket?.isClosed == false) {
+                try {
+                    val client = serverSocket?.accept()
+                    client?.let { handleIncomingConnection(it) }
+                } catch (e: Exception) {
+                    break
+                }
+            }
+        }
+    }
+    
+    private fun handleIncomingConnection(socket: Socket) {
+        thread {
+            try {
+                val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+                val spec = GCMParameterSpec(128, iv)
+                cipher.init(Cipher.DECRYPT_MODE, secretKey, spec)
+                
+                val cipherInputStream = CipherInputStream(socket.getInputStream(), cipher)
+                val outputFile = File(context.filesDir, "received_p2p_media_${System.currentTimeMillis()}.mp4")
+                
+                FileOutputStream(outputFile).use { fos ->
+                    cipherInputStream.copyTo(fos)
+                }
+                
+                Log.d("P2P", "File received successfully: ${outputFile.absolutePath}")
+            } catch (e: Exception) {
+                Log.e("P2P", "Error receiving file", e)
+            } finally {
+                socket.close()
+            }
+        }
+    }
+    
+    suspend fun sendEncryptedFile(peer: PeerDevice, file: File): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val socket = Socket(peer.host, peer.port)
+            
+            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+            val spec = GCMParameterSpec(128, iv)
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, spec)
+            
+            val cipherOutputStream = CipherOutputStream(socket.getOutputStream(), cipher)
+            
+            FileInputStream(file).use { fis ->
+                fis.copyTo(cipherOutputStream)
+            }
+            
+            cipherOutputStream.close()
+            socket.close()
+            return@withContext true
+        } catch (e: Exception) {
+            Log.e("P2P", "Error sending file", e)
+            return@withContext false
+        }
     }
 
     private fun registerService(port: Int) {

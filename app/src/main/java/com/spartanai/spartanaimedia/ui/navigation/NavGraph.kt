@@ -35,7 +35,7 @@ fun NavGraph(
             HomeScreen(
                 viewModel = viewModel,
                 onMediaClick = { item ->
-                    navController.navigate("player/${item.mediaUrl}/${item.title}")
+                    navController.navigate("details/${item.mediaUrl}/${item.title}")
                 },
                 onDownloadsClick = {
                     navController.navigate("downloads")
@@ -46,9 +46,30 @@ fun NavGraph(
             )
         }
 
-        composable("player/{url}/{title}") { backStackEntry ->
+        composable("details/{url}/{title}") { backStackEntry ->
             val url = backStackEntry.arguments?.getString("url") ?: ""
             val title = backStackEntry.arguments?.getString("title") ?: ""
+            val decodedUrl = URLDecoder.decode(url, StandardCharsets.UTF_8.toString())
+            val decodedTitle = URLDecoder.decode(title, StandardCharsets.UTF_8.toString())
+            
+            MediaDetailScreen(
+                viewModel = viewModel,
+                mediaUrl = decodedUrl,
+                title = decodedTitle,
+                onBack = { navController.popBackStack() },
+                onPlay = { item ->
+                    navController.navigate("player/${item.mediaUrl}/${item.title}")
+                },
+                onWatchTogether = { item ->
+                    navController.navigate("player/${item.mediaUrl}/${item.title}?watchParty=true")
+                }
+            )
+        }
+
+        composable("player/{url}/{title}?watchParty={watchParty}") { backStackEntry ->
+            val url = backStackEntry.arguments?.getString("url") ?: ""
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val watchParty = backStackEntry.arguments?.getString("watchParty")?.toBoolean() ?: false
             val decodedUrl = URLDecoder.decode(url, StandardCharsets.UTF_8.toString())
             val decodedTitle = URLDecoder.decode(title, StandardCharsets.UTF_8.toString())
             
@@ -56,6 +77,7 @@ fun NavGraph(
                 viewModel = viewModel,
                 mediaUrl = decodedUrl,
                 title = decodedTitle,
+                startInWatchParty = watchParty,
                 onBack = { navController.popBackStack() }
             )
         }

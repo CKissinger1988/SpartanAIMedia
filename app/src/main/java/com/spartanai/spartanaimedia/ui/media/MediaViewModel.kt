@@ -51,14 +51,17 @@ class MediaViewModel(
     private val _chatMessages = MutableStateFlow<List<SyncEvent.Message>>(emptyList())
     private val _currentMediaId = MutableStateFlow<String?>(null)
 
+    private val _manualUpdateInfo = MutableStateFlow<UpdateInfo?>(null)
+
     // The main reactive pipeline for app data
     val uiState: StateFlow<MediaUiState> = combine(
         combine(
             repository.getAllProfiles(),
             repository.getSelectedProfile(),
-            updateManager.checkForUpdates()
-        ) { profiles, selectedProfile, updateInfo ->
-            AppDataBundle(profiles, selectedProfile, updateInfo)
+            updateManager.checkForUpdates(),
+            _manualUpdateInfo
+        ) { profiles, selectedProfile, updateInfo, manualUpdate ->
+            AppDataBundle(profiles, selectedProfile, manualUpdate ?: updateInfo)
         },
         combine(
             _searchQuery,
@@ -285,6 +288,32 @@ class MediaViewModel(
         viewModelScope.launch {
             val localPath = if (isSecure) "secure_media/${item.title}.mp4" else "Movies/${item.title}.mp4"
             repository.markAsDownloaded(item.id, localPath)
+        }
+    }
+
+    fun forceUpdateCheck() {
+        viewModelScope.launch {
+            val update = updateManager.performManualCheck()
+            if (update != null) {
+                _manualUpdateInfo.value = update
+            } else {
+                // Emitting a dummy object just to show "No updates found" in UI if needed,
+                // but for now we'll just set it to null or an empty UpdateInfo
+                _manualUpdateInfo.value = UpdateInfo("", "", false, false)
+            }
+        }
+    }
+
+    fun shareMediaP2P(item: MediaItem, peer: PeerDevice) {
+        viewModelScope.launch {
+            val isSecure = uiState.value.selectedProfile?.isAnonymous ?: false
+            val localPath = if (isSecure) "secure_media/${item.title}.mp4" else "Movies/${item.title}.mp4"
+            // Get files dir from download manager or context
+            // Since we don't have context here, we can ask downloadManager to get the file
+            val file = downloadManager.getFileForPath(localPath)
+            if (file != null && file.exists()) {
+                p2pManager.sendEncryptedFile(peer, file)
+            }
         }
     }
 

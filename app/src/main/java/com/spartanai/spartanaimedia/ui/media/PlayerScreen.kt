@@ -55,6 +55,7 @@ fun PlayerScreen(
     mediaUrl: String,
     title: String,
     isInPiPMode: Boolean = false,
+    startInWatchParty: Boolean = false,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current

@@ -34,4 +34,12 @@ class MediaDownloadManager(private val context: Context) {
 
         return downloadManager.enqueue(request)
     }
+
+    fun getFileForPath(localPath: String): File? {
+        val secureFile = File(context.getExternalFilesDir(null), localPath)
+        if (secureFile.exists()) return secureFile
+        
+        val publicFile = File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES), localPath.substringAfterLast("/"))
+        return if (publicFile.exists()) publicFile else null
+    }
 }

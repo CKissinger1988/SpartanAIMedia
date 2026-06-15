@@ -37,9 +37,13 @@ class UpdateManager(private val context: Context) {
     private val repoUrl = "https://api.github.com/repos/CKissinger1988/SpartanAIMedia/releases/latest"
 
     fun checkForUpdates(): Flow<UpdateInfo?> = flow {
+        emit(performManualCheck())
+    }
+
+    suspend fun performManualCheck(): UpdateInfo? = withContext(Dispatchers.IO) {
         try {
             val request = Request.Builder().url(repoUrl).build()
-            val response = withContext(Dispatchers.IO) { client.newCall(request).execute() }
+            val response = client.newCall(request).execute()
             
             if (response.isSuccessful) {
                 val body = response.body?.string()
@@ -52,13 +56,12 @@ class UpdateManager(private val context: Context) {
                     val isForce = isMajorUpdate(latestVersion, currentVersion)
                     val downloadUrl = release.assets.find { it.name.endsWith(".apk") }?.browser_download_url ?: release.html_url
                     
-                    emit(UpdateInfo(latestVersion, downloadUrl, updateAvailable, isForceUpdate = isForce))
+                    return@withContext UpdateInfo(latestVersion, downloadUrl, updateAvailable, isForceUpdate = isForce)
                 }
-            } else {
-                emit(null)
             }
+            return@withContext null
         } catch (e: Exception) {
-            emit(null)
+            return@withContext null
         }
     }
 

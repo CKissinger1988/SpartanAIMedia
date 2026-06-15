@@ -61,6 +61,40 @@ fun ProfilesScreen(
                     onSelect = { viewModel.selectProfile(profile) }
                 )
             }
+            
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Text("System Settings", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Button(
+                    onClick = { viewModel.forceUpdateCheck() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Check for Updates")
+                }
+                
+                uiState.updateInfo?.let { update ->
+                    if (update.updateAvailable) {
+                        Text(
+                            text = "New version available: ${update.latestVersion}",
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    } else if (update.latestVersion.isEmpty()) {
+                        Text(
+                            text = "No updates found.",
+                            color = Color.Gray,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+                }
+            }
         }
 
         if (showCreateDialog) {
