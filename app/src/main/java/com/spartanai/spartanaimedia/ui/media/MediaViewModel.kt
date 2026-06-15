@@ -326,4 +326,13 @@ class MediaViewModel(
             }
         }
     }
+
+    fun updateProxyConfig(host: String, port: Int, type: String) {
+        val userId = uiState.value.selectedProfile?.userId ?: return
+        viewModelScope.launch {
+            repository.updateProxyConfig(userId, host, port, type)
+            // Trigger a refresh to use the new proxy settings immediately
+            repository.refreshMediaItems()
+        }
+    }
 }

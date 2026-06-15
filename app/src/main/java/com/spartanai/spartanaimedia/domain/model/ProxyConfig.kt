@@ -9,6 +9,6 @@ data class ProxyConfig(
     val isEnabled: Boolean = false
 ) {
     enum class ProxyType {
-        HTTP, SOCKS
+        HTTP, SOCKS, TOR
     }
 }

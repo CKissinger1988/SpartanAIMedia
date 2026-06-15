@@ -20,6 +20,9 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertProfile(profile: UserProfileEntity)
 
+    @Query("UPDATE user_profiles SET proxyHost = :host, proxyPort = :port, proxyType = :type WHERE userId = :userId")
+    fun updateProxyConfig(userId: String, host: String?, port: Int?, type: String?)
+
     @Query("SELECT m.* FROM media_items m INNER JOIN watchlist w ON m.id = w.mediaId WHERE w.userId = :userId")
     fun getWatchlistForUser(userId: String): Flow<List<MediaEntity>>
 

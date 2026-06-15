@@ -21,6 +21,9 @@ interface MediaRepository {
     // Downloads
     suspend fun markAsDownloaded(mediaId: String, localPath: String)
     
+    // Proxy
+    suspend fun updateProxyConfig(userId: String, proxyHost: String?, proxyPort: Int?, proxyType: String?)
+    
     // Pi Network
     suspend fun updatePiData(userId: String, username: String, wallet: String)
     suspend fun setPiNodeActive(userId: String, isActive: Boolean)

@@ -21,7 +21,7 @@ class MediaScraper {
             if (proxyConfig != null && proxyConfig.isEnabled) {
                 val proxyType = when (proxyConfig.type) {
                     ProxyConfig.ProxyType.HTTP -> Proxy.Type.HTTP
-                    ProxyConfig.ProxyType.SOCKS -> Proxy.Type.SOCKS
+                    ProxyConfig.ProxyType.SOCKS, ProxyConfig.ProxyType.TOR -> Proxy.Type.SOCKS
                 }
                 val proxy = Proxy(proxyType, InetSocketAddress(proxyConfig.host, proxyConfig.port))
                 connection.proxy(proxy)
@@ -37,7 +37,7 @@ class MediaScraper {
             if (proxyConfig != null && proxyConfig.isEnabled) {
                 val proxyType = when (proxyConfig.type) {
                     ProxyConfig.ProxyType.HTTP -> Proxy.Type.HTTP
-                    ProxyConfig.ProxyType.SOCKS -> Proxy.Type.SOCKS
+                    ProxyConfig.ProxyType.SOCKS, ProxyConfig.ProxyType.TOR -> Proxy.Type.SOCKS
                 }
                 val proxy = Proxy(proxyType, InetSocketAddress(proxyConfig.host, proxyConfig.port))
                 wsConnection.proxy(proxy)

@@ -67,6 +67,51 @@ fun ProfilesScreen(
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(16.dp))
                 
+                Text("Network Settings", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                var proxyHost by remember { mutableStateOf(uiState.selectedProfile?.proxyConfig?.host ?: "") }
+                var proxyPort by remember { mutableStateOf(uiState.selectedProfile?.proxyConfig?.port?.toString() ?: "") }
+                var proxyType by remember { mutableStateOf(uiState.selectedProfile?.proxyConfig?.type?.name ?: "HTTP") }
+
+                OutlinedTextField(
+                    value = proxyHost,
+                    onValueChange = { proxyHost = it },
+                    label = { Text("Proxy Host (e.g. 127.0.0.1)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = proxyPort,
+                    onValueChange = { proxyPort = it },
+                    label = { Text("Proxy Port (e.g. 9050 for TOR)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    listOf("HTTP", "SOCKS", "TOR").forEach { type ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(
+                                selected = (type == proxyType),
+                                onClick = { proxyType = type }
+                            )
+                            Text(text = type)
+                        }
+                    }
+                }
+                
+                Button(
+                    onClick = { 
+                        viewModel.updateProxyConfig(proxyHost, proxyPort.toIntOrNull() ?: 8080, proxyType) 
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Apply Network Settings")
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(16.dp))
+                
                 Text("System Settings", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 

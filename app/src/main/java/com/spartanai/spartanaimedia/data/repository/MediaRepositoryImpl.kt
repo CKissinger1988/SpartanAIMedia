@@ -138,6 +138,12 @@ class MediaRepositoryImpl(
         }
     }
 
+    override suspend fun updateProxyConfig(userId: String, proxyHost: String?, proxyPort: Int?, proxyType: String?) {
+        withContext(Dispatchers.IO) {
+            userDao.updateProxyConfig(userId, proxyHost, proxyPort, proxyType)
+        }
+    }
+
     override suspend fun updatePiData(userId: String, username: String, wallet: String) {
         withContext(Dispatchers.IO) {
             val entity = userDao.getProfileById(userId)
