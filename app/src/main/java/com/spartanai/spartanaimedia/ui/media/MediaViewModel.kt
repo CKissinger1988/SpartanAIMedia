@@ -284,9 +284,8 @@ class MediaViewModel(
 
     fun downloadMedia(item: MediaItem) {
         val isSecure = uiState.value.selectedProfile?.isAnonymous ?: false
-        downloadManager.downloadMedia(item.mediaUrl, item.title, isSecure)
+        val localPath = downloadManager.downloadMedia(item.mediaUrl, item.title, isSecure)
         viewModelScope.launch {
-            val localPath = if (isSecure) "secure_media/${item.title}.mp4" else "Movies/${item.title}.mp4"
             repository.markAsDownloaded(item.id, localPath)
         }
     }
