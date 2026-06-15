@@ -42,40 +42,52 @@ class MediaScraper {
             results.addAll(getWatchSeriesData())
         }
 
-        // 3. Fetch from 123Movies
-        try {
-            val moviesConnection = Jsoup.connect("https://ww8.123moviesfree.net/home/")
-            if (proxyConfig != null && proxyConfig.isEnabled) {
-                applyProxy(moviesConnection, proxyConfig)
-            }
-            val doc = moviesConnection.get()
-            val items = doc.select(".ml-item") // Common class for media items
-            if (items.isNotEmpty()) {
+        // 3. Fetch from 123Movies (Deep Crawl)
+        val sections = listOf(
+            "https://ww8.123moviesfree.net/home/",
+            "https://ww8.123moviesfree.net/movie/",
+            "https://ww8.123moviesfree.net/tv-series/",
+            "https://ww8.123moviesfree.net/trending/"
+        )
+
+        sections.forEach { url ->
+            try {
+                val connection = Jsoup.connect(url)
+                if (proxyConfig != null && proxyConfig.isEnabled) {
+                    applyProxy(connection, proxyConfig)
+                }
+                val doc = connection.get()
+                val items = doc.select(".ml-item")
                 items.forEach { element ->
                     val title = element.select("h2").text()
                     val thumb = element.select("img").attr("data-original").ifEmpty { element.select("img").attr("src") }
                     val link = element.select("a").attr("href")
+                    val quality = element.select(".mli-quality").text()
+                    
                     if (title.isNotEmpty() && thumb.isNotEmpty()) {
                         results.add(MediaItem(
                             id = "123_${title.hashCode()}",
                             title = title,
                             thumbnailUrl = if (thumb.startsWith("//")) "https:$thumb" else thumb,
                             mediaUrl = link,
-                            description = "Scraped from 123Movies",
-                            category = "Movies",
-                            genre = "Action",
+                            description = "Watch $title in $quality on 123Movies",
+                            category = if (url.contains("tv-series")) "Series" else "Movies",
+                            genre = "Various",
+                            resolution = if (quality.contains("HD")) "1080p" else "720p",
                             rating = 7.0f
                         ))
                     }
                 }
-            } else {
-                results.addAll(get123MoviesFallback())
+            } catch (e: Exception) {
+                // Individual section failure handled silently to continue crawl
             }
-        } catch (e: Exception) {
+        }
+
+        if (results.none { it.id.startsWith("123_") }) {
             results.addAll(get123MoviesFallback())
         }
         
-        return@withContext results
+        return@withContext results.distinctBy { it.id }
     }
 
     private fun applyProxy(connection: org.jsoup.Connection, proxyConfig: ProxyConfig) {
