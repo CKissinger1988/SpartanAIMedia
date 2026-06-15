@@ -62,7 +62,12 @@ class MediaRepositoryImpl(
         withContext(Dispatchers.IO) {
             val user = selectedUserId.value?.let { userDao.getProfileById(it) }
             val proxy = user?.proxyHost?.let { host ->
-                ProxyConfig(host, user.proxyPort ?: 8080, ProxyConfig.ProxyType.valueOf(user.proxyType ?: "HTTP"), isEnabled = true)
+                val pType = try {
+                    ProxyConfig.ProxyType.valueOf(user.proxyType ?: "HTTP")
+                } catch (e: Exception) {
+                    ProxyConfig.ProxyType.HTTP
+                }
+                ProxyConfig(host, user.proxyPort ?: 8080, pType, isEnabled = true)
             }
             
             val remoteItems = scraper.fetchMediaItems(proxy)
@@ -81,7 +86,14 @@ class MediaRepositoryImpl(
         username = username,
         avatarUrl = avatarUrl,
         isAnonymous = isAnonymous,
-        proxyConfig = proxyHost?.let { host -> ProxyConfig(host, proxyPort ?: 8080, ProxyConfig.ProxyType.valueOf(proxyType ?: "HTTP"), isEnabled = true) },
+        proxyConfig = proxyHost?.let { host -> 
+            val pType = try {
+                ProxyConfig.ProxyType.valueOf(proxyType ?: "HTTP")
+            } catch (e: Exception) {
+                ProxyConfig.ProxyType.HTTP
+            }
+            ProxyConfig(host, proxyPort ?: 8080, pType, isEnabled = true) 
+        },
         piUsername = piUsername,
         piWalletAddress = piWalletAddress,
         isPiNodeActive = isPiNodeActive

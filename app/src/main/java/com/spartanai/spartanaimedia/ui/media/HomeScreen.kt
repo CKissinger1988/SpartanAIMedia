@@ -272,10 +272,13 @@ fun CategoryTabs(
         containerColor = MaterialTheme.colorScheme.surface,
         divider = {},
         indicator = { tabPositions ->
-            TabRowDefaults.SecondaryIndicator(
-                modifier = Modifier.tabIndicatorOffset(tabPositions[categories.indexOf(selectedCategory).coerceAtLeast(0)]),
-                color = MaterialTheme.colorScheme.primary
-            )
+            if (tabPositions.isNotEmpty()) {
+                val index = categories.indexOf(selectedCategory).coerceAtLeast(0)
+                TabRowDefaults.SecondaryIndicator(
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[index]),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     ) {
         categories.forEach { category ->

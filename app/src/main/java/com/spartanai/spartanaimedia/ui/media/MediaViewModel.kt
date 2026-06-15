@@ -91,13 +91,6 @@ class MediaViewModel(
                 ))
             }
         } else {
-            // Auto-activate node and P2P if needed
-            if (!selectedProfile.isPiNodeActive) {
-                togglePiNode(true)
-                p2pManager.startP2P()
-            }
-            piNodeService.setNodeActive(selectedProfile.isPiNodeActive)
-
             // Internal logic for chat and events
             val latestEvent = sync.first
             if (latestEvent is SyncEvent.Message) {
@@ -273,6 +266,13 @@ class MediaViewModel(
     fun selectProfile(profile: UserProfile) {
         viewModelScope.launch {
             repository.selectProfile(profile.userId)
+            // Properly handle side-effects on profile selection
+            piNodeService.setNodeActive(profile.isPiNodeActive)
+            if (profile.isPiNodeActive) {
+                p2pManager.startP2P()
+            } else {
+                p2pManager.stopP2P()
+            }
         }
     }
 
@@ -305,8 +305,9 @@ class MediaViewModel(
 
     fun shareMediaP2P(item: MediaItem, peer: PeerDevice, onProgress: ((Float) -> Unit)? = null) {
         viewModelScope.launch {
-            val isSecure = uiState.value.selectedProfile?.isAnonymous ?: false
-            val localPath = if (isSecure) "secure_media/${item.title}.mp4" else "Movies/${item.title}.mp4"
+            val localPath = item.downloadPath ?: return@launch
+            if (localPath.isBlank()) return@launch
+            
             val file = downloadManager.getFileForPath(localPath)
             if (file != null && file.exists()) {
                 p2pManager.sendEncryptedFile(peer, file, onProgress)

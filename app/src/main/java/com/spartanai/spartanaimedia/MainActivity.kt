@@ -2,18 +2,18 @@ package com.spartanai.spartanaimedia
 
 import android.content.res.Configuration
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
 import com.spartanai.spartanaimedia.ui.media.MediaViewModel
 import com.spartanai.spartanaimedia.ui.navigation.NavGraph
 import com.spartanai.spartanaimedia.ui.theme.SpartanAIMediaTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     
     private val viewModel: MediaViewModel by viewModel()
     private var isPiPActive = false
