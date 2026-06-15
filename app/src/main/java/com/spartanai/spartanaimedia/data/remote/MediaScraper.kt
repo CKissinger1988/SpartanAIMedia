@@ -5,116 +5,115 @@ import com.spartanai.spartanaimedia.domain.model.ProxyConfig
 import org.jsoup.Jsoup
 import java.net.InetSocketAddress
 import java.net.Proxy
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class MediaScraper {
     
     private val baseUrl = "https://peach.blender.org/"
 
     suspend fun fetchMediaItems(proxyConfig: ProxyConfig? = null): List<MediaItem> = withContext(Dispatchers.IO) {
-        val results = mutableListOf<MediaItem>()
+        val results = java.util.Collections.synchronizedList(mutableListOf<MediaItem>())
         
-        // 1. Fetch from Blender Open Movies
-        try {
-            val connection = Jsoup.connect(baseUrl)
-            if (proxyConfig != null && proxyConfig.isEnabled) {
-                val proxyType = when (proxyConfig.type) {
-                    ProxyConfig.ProxyType.HTTP -> Proxy.Type.HTTP
-                    ProxyConfig.ProxyType.SOCKS, ProxyConfig.ProxyType.TOR -> Proxy.Type.SOCKS
-                }
-                val proxy = Proxy(proxyType, InetSocketAddress(proxyConfig.host, proxyConfig.port))
-                connection.proxy(proxy)
-            }
-            results.addAll(getScrapedData())
-        } catch (e: Exception) {
-            results.addAll(getScrapedData())
-        }
-        
-        // 2. Fetch from WatchSeries.bar
-        try {
-            val wsConnection = Jsoup.connect("https://watchseries.bar/home")
-            if (proxyConfig != null && proxyConfig.isEnabled) {
-                applyProxy(wsConnection, proxyConfig)
-            }
-            results.addAll(getWatchSeriesData())
-        } catch (e: Exception) {
-            results.addAll(getWatchSeriesData())
-        }
+        coroutineScope {
+            val tasks = mutableListOf<Deferred<*>>()
 
-        // 3. Fetch from 123Movies (Multi-Page Crawl)
-        val sections = listOf(
-            "https://ww8.123moviesfree.net/movie/",
-            "https://ww8.123moviesfree.net/tv-series/",
-            "https://ww8.123moviesfree.net/trending/"
-        )
-
-        sections.forEach { baseUrl ->
-            for (page in 1..5) {
+            // 1. Fetch from Blender Open Movies
+            tasks.add(async {
                 try {
-                    val url = if (page == 1) baseUrl else "${baseUrl}page/$page/"
-                    val connection = Jsoup.connect(url)
-                    if (proxyConfig != null && proxyConfig.isEnabled) {
-                        applyProxy(connection, proxyConfig)
+                    results.addAll(getScrapedData())
+                } catch (e: Exception) {}
+            })
+            
+            // 2. Fetch from WatchSeries.bar
+            tasks.add(async {
+                try {
+                    results.addAll(getWatchSeriesData())
+                } catch (e: Exception) {}
+            })
+
+            // 3. Mega-Crawl from 123Movies (20 pages per section)
+            val sections = listOf(
+                "https://ww8.123moviesfree.net/movie/",
+                "https://ww8.123moviesfree.net/tv-series/",
+                "https://ww8.123moviesfree.net/trending/",
+                "https://ww8.123moviesfree.net/new-releases/"
+            )
+
+            sections.forEach { sectionBaseUrl ->
+                tasks.add(async {
+                    for (page in 1..20) {
+                        try {
+                            val url = if (page == 1) sectionBaseUrl else "${sectionBaseUrl}page/$page/"
+                            val connection = Jsoup.connect(url).timeout(10000)
+                            if (proxyConfig != null && proxyConfig.isEnabled) {
+                                applyProxy(connection, proxyConfig)
+                            }
+                            val doc = connection.get()
+                            val items = doc.select(".ml-item")
+                            if (items.isEmpty()) break // Stop if no items on page
+
+                            items.forEach { element ->
+                                val title = element.select("h2").text()
+                                val thumb = element.select("img").attr("data-original").ifEmpty { element.select("img").attr("src") }
+                                val link = element.select("a").attr("href")
+                                val quality = element.select(".mli-quality").text()
+                                
+                                if (title.isNotEmpty() && thumb.isNotEmpty()) {
+                                    results.add(MediaItem(
+                                        id = "123_${title.hashCode()}",
+                                        title = title,
+                                        thumbnailUrl = if (thumb.startsWith("//")) "https:$thumb" else thumb,
+                                        mediaUrl = link,
+                                        description = "Watch $title in $quality on 123Movies",
+                                        category = if (url.contains("tv-series")) "Series" else "Movies",
+                                        genre = "Various",
+                                        resolution = if (quality.contains("HD")) "1080p" else "720p",
+                                        rating = 7.0f
+                                    ))
+                                }
+                            }
+                        } catch (e: Exception) {
+                            break 
+                        }
                     }
-                    val doc = connection.get()
-                    val items = doc.select(".ml-item")
-                    items.forEach { element ->
-                        val title = element.select("h2").text()
-                        val thumb = element.select("img").attr("data-original").ifEmpty { element.select("img").attr("src") }
-                        val link = element.select("a").attr("href")
-                        val quality = element.select(".mli-quality").text()
+                })
+            }
+
+            // 4. Fetch from SFlix
+            tasks.add(async {
+                try {
+                    val sflixConnection = Jsoup.connect("https://sflix.to/home")
+                    if (proxyConfig != null && proxyConfig.isEnabled) {
+                        applyProxy(sflixConnection, proxyConfig)
+                    }
+                    val doc = sflixConnection.get()
+                    val flixItems = doc.select(".flw-item")
+                    flixItems.forEach { element ->
+                        val title = element.select(".film-name").text()
+                        val thumb = element.select("img").attr("data-src").ifEmpty { element.select("img").attr("src") }
+                        val link = "https://sflix.to" + element.select("a").attr("href")
+                        val meta = element.select(".fdi-item")
+                        val quality = element.select(".pick.fdi-item").text()
                         
                         if (title.isNotEmpty() && thumb.isNotEmpty()) {
                             results.add(MediaItem(
-                                id = "123_${title.hashCode()}",
+                                id = "sflix_${title.hashCode()}",
                                 title = title,
-                                thumbnailUrl = if (thumb.startsWith("//")) "https:$thumb" else thumb,
+                                thumbnailUrl = thumb,
                                 mediaUrl = link,
-                                description = "Watch $title in $quality on 123Movies",
-                                category = if (url.contains("tv-series")) "Series" else "Movies",
-                                genre = "Action",
+                                description = "Premium stream available for $title via SFlix",
+                                category = if (link.contains("/tv/")) "Series" else "Movies",
+                                genre = meta.firstOrNull()?.text() ?: "Mixed",
                                 resolution = if (quality.contains("HD")) "1080p" else "720p",
-                                rating = 7.0f
+                                rating = 8.0f
                             ))
                         }
                     }
-                } catch (e: Exception) {
-                    break // Stop crawling this section if a page fails
-                }
-            }
-        }
+                } catch (e: Exception) {}
+            })
 
-        // 4. Fetch from SFlix (High-Volume Source)
-        try {
-            val sflixConnection = Jsoup.connect("https://sflix.to/home")
-            if (proxyConfig != null && proxyConfig.isEnabled) {
-                applyProxy(sflixConnection, proxyConfig)
-            }
-            val doc = sflixConnection.get()
-            val flixItems = doc.select(".flw-item")
-            flixItems.forEach { element ->
-                val title = element.select(".film-name").text()
-                val thumb = element.select("img").attr("data-src").ifEmpty { element.select("img").attr("src") }
-                val link = "https://sflix.to" + element.select("a").attr("href")
-                val meta = element.select(".fdi-item")
-                val quality = element.select(".pick.fdi-item").text()
-                
-                if (title.isNotEmpty() && thumb.isNotEmpty()) {
-                    results.add(MediaItem(
-                        id = "sflix_${title.hashCode()}",
-                        title = title,
-                        thumbnailUrl = thumb,
-                        mediaUrl = link,
-                        description = "Premium stream available for $title via SFlix",
-                        category = if (link.contains("/tv/")) "Series" else "Movies",
-                        genre = meta.firstOrNull()?.text() ?: "Mixed",
-                        resolution = if (quality.contains("HD")) "1080p" else "720p",
-                        rating = 8.0f
-                    ))
-                }
-            }
-        } catch (e: Exception) {}
+            tasks.awaitAll()
+        }
 
         if (results.isEmpty()) {
             results.addAll(get123MoviesFallback())
