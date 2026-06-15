@@ -134,6 +134,16 @@ fun MediaDetailScreen(
                         Text("WATCH PARTY")
                     }
                     IconButton(
+                        onClick = { viewModel.toggleFavorite(mediaItem) },
+                        modifier = Modifier.size(50.dp).background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                    ) {
+                        Icon(
+                            if (mediaItem.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = "Favorite",
+                            tint = if (mediaItem.isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    IconButton(
                         onClick = { viewModel.toggleWatchlist(mediaItem) },
                         modifier = Modifier.size(50.dp).background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
                     ) {

@@ -173,7 +173,7 @@ fun HomeScreen(
                     }
                 }
 
-                // Featured / Continue Watching (only on "All" tab)
+                // Continue Watching
                 if (uiState.selectedCategory == "All" && uiState.continueWatching.isNotEmpty() && uiState.searchQuery.isEmpty()) {
                     item {
                         SectionHeader("Continue Watching")
@@ -188,7 +188,22 @@ fun HomeScreen(
                     }
                 }
 
-                // Nearby Spartans (P2P Discovery) - Keeping active for P2P sharing as it's separate from Pi Node
+                // AI Recommendations
+                if (uiState.selectedCategory == "All" && uiState.recommendations.isNotEmpty() && uiState.searchQuery.isEmpty()) {
+                    item {
+                        SectionHeader("Recommended for You")
+                        LazyRow(
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(uiState.recommendations) { item ->
+                                GenreMediaCard(item, onMediaClick)
+                            }
+                        }
+                    }
+                }
+
+                // Nearby Spartans (P2P Discovery)
                 if (uiState.selectedCategory == "All" && uiState.nearbyPeers.isNotEmpty() && uiState.searchQuery.isEmpty()) {
                     item {
                         SectionHeader("Nearby Spartans")
@@ -320,17 +335,30 @@ fun GenreMediaCard(
                     modifier = Modifier.fillMaxWidth().height(220.dp),
                     contentScale = ContentScale.Crop
                 )
-                Surface(
+                Row(
                     modifier = Modifier.align(Alignment.TopEnd).padding(6.dp),
-                    color = Color.Black.copy(alpha = 0.7f),
-                    shape = CircleShape
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = item.resolution,
-                        color = Color.White,
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                    )
+                    if (item.isFavorite) {
+                        Icon(
+                            Icons.Default.Favorite,
+                            contentDescription = null,
+                            tint = Color.Red,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(4.dp))
+                    }
+                    Surface(
+                        color = Color.Black.copy(alpha = 0.7f),
+                        shape = CircleShape
+                    ) {
+                        Text(
+                            text = item.resolution,
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
                 }
                 if (item.progress > 0) {
                     LinearProgressIndicator(

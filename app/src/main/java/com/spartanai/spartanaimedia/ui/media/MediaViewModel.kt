@@ -7,6 +7,8 @@ import com.spartanai.spartanaimedia.data.remote.*
 import com.spartanai.spartanaimedia.domain.model.MediaItem
 import com.spartanai.spartanaimedia.domain.model.UserProfile
 import com.spartanai.spartanaimedia.domain.repository.MediaRepository
+import com.spartanai.spartanaimedia.domain.usecase.GetHomeScreenDataUseCase
+import com.spartanai.spartanaimedia.domain.usecase.GetRecommendationsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -44,7 +46,9 @@ class MediaViewModel(
     private val suggestionManager: SearchSuggestionManager,
     private val p2pManager: P2PManager,
     private val syncManager: MediaSyncManager,
-    private val recommendationEngine: RecommendationEngine
+    private val recommendationEngine: RecommendationEngine,
+    private val getHomeScreenDataUseCase: GetHomeScreenDataUseCase,
+    private val getRecommendationsUseCase: GetRecommendationsUseCase
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -92,34 +96,30 @@ class MediaViewModel(
             } else {
                 combine(
                     repository.getMediaItems(context.query),
-                    repository.getWatchlist(selectedProfile.userId),
-                    repository.getMediaItems(null) 
-                ) { filteredItems, watchlist, allItems ->
+                    getHomeScreenDataUseCase(selectedProfile.userId),
+                    repository.getWatchlist(selectedProfile.userId)
+                ) { filteredItems, homeData, watchlist ->
                     val filteredByTab = if (context.category == "All") filteredItems else filteredItems.filter { it.category == context.category }
                     val grouped = filteredByTab.groupBy { it.category }
                         .mapValues { entry -> entry.value.groupBy { it.genre } }
                     
                     val downloaded = filteredItems.filter { it.isDownloaded }
-                    val continueWatching = filteredItems.filter { it.lastPlaybackPosition > 0 && it.progress < 0.95f }
-                        .sortedByDescending { m -> m.lastPlaybackPosition }
                     
                     // AI Suggestions
-                    val suggestions = try { suggestionManager.getSuggestions(context.query, allItems) } catch(e: Exception) { emptyList() }
+                    val suggestions = try { suggestionManager.getSuggestions(context.query, filteredItems) } catch(e: Exception) { emptyList() }
 
                     // Recommendations
-                    val recommendations = try {
-                        context.currentMediaId?.let { id ->
-                            allItems.find { it.id == id }?.let { current ->
-                                recommendationEngine.getRelatedContent(current, allItems)
-                            }
-                        } ?: recommendationEngine.getPersonalizedRecommendations(allItems, continueWatching)
-                    } catch(e: Exception) { emptyList() }
+                    val recommendations = context.currentMediaId?.let { id ->
+                        filteredItems.find { it.id == id }?.let { current ->
+                            recommendationEngine.getRelatedContent(current, filteredItems)
+                        }
+                    } ?: homeData.recommendations
 
                     MediaUiState(
                         mediaByCategory = grouped,
                         allItems = filteredItems,
                         downloadedMedia = downloaded,
-                        continueWatching = continueWatching,
+                        continueWatching = homeData.continueWatching,
                         watchlist = watchlist,
                         recommendations = recommendations,
                         profiles = data.profiles,
@@ -331,6 +331,12 @@ class MediaViewModel(
             } else {
                 repository.addToWatchlist(userId, item.id)
             }
+        }
+    }
+
+    fun toggleFavorite(item: MediaItem) {
+        viewModelScope.launch {
+            repository.toggleFavorite(item.id)
         }
     }
 

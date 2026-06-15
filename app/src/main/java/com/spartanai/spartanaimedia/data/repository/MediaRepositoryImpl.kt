@@ -150,6 +150,21 @@ class MediaRepositoryImpl(
         }
     }
 
+    override suspend fun deleteMediaItem(mediaId: String) {
+        withContext(Dispatchers.IO) {
+            mediaDao.deleteMediaItemById(mediaId)
+        }
+    }
+
+    override suspend fun toggleFavorite(mediaId: String) {
+        withContext(Dispatchers.IO) {
+            val entity = mediaDao.getMediaItemById(mediaId)
+            if (entity != null) {
+                mediaDao.updateMediaItem(entity.copy(isFavorite = !entity.isFavorite))
+            }
+        }
+    }
+
     override suspend fun updateProxyConfig(userId: String, proxyHost: String?, proxyPort: Int?, proxyType: String?) {
         withContext(Dispatchers.IO) {
             userDao.updateProxyConfig(userId, proxyHost, proxyPort, proxyType)

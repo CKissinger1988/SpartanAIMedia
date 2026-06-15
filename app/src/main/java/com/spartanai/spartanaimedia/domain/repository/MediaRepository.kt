@@ -20,6 +20,10 @@ interface MediaRepository {
     
     // Downloads
     suspend fun markAsDownloaded(mediaId: String, localPath: String)
+    suspend fun deleteMediaItem(mediaId: String)
+    
+    // Favorites
+    suspend fun toggleFavorite(mediaId: String)
     
     // Proxy
     suspend fun updateProxyConfig(userId: String, proxyHost: String?, proxyPort: Int?, proxyType: String?)

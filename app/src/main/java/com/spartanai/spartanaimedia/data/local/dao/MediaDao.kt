@@ -21,6 +21,9 @@ interface MediaDao {
     @Query("SELECT * FROM media_items WHERE id = :id")
     fun getMediaItemById(id: String): MediaEntity?
 
+    @Query("DELETE FROM media_items WHERE id = :id")
+    fun deleteMediaItemById(id: String)
+
     @Update
     fun updateMediaItem(item: MediaEntity)
 }

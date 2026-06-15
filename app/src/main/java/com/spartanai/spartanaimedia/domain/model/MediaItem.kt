@@ -11,6 +11,7 @@ data class MediaItem(
     val resolution: String = "1080p",
     val downloadPath: String? = null,
     val isDownloaded: Boolean = false,
+    val isFavorite: Boolean = false,
     val lastPlaybackPosition: Long = 0L,
     val totalDuration: Long = 0L,
     val rating: Float = 0.0f,

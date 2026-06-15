@@ -16,8 +16,12 @@ data class MediaEntity(
     val resolution: String,
     val downloadPath: String?,
     val isDownloaded: Boolean,
+    val isFavorite: Boolean = false,
     val lastPlaybackPosition: Long = 0L,
-    val totalDuration: Long = 0L
+    val totalDuration: Long = 0L,
+    val rating: Float = 0.0f,
+    val releaseYear: String = "2026",
+    val director: String = "Spartan Director"
 )
 
 fun MediaEntity.toDomainModel(): MediaItem {
@@ -32,8 +36,12 @@ fun MediaEntity.toDomainModel(): MediaItem {
         resolution = resolution,
         downloadPath = downloadPath,
         isDownloaded = isDownloaded,
+        isFavorite = isFavorite,
         lastPlaybackPosition = lastPlaybackPosition,
-        totalDuration = totalDuration
+        totalDuration = totalDuration,
+        rating = rating,
+        releaseYear = releaseYear,
+        director = director
     )
 }
 
@@ -49,7 +57,11 @@ fun MediaItem.toEntity(): MediaEntity {
         resolution = resolution,
         downloadPath = downloadPath,
         isDownloaded = isDownloaded,
+        isFavorite = isFavorite,
         lastPlaybackPosition = lastPlaybackPosition,
-        totalDuration = totalDuration
+        totalDuration = totalDuration,
+        rating = rating,
+        releaseYear = releaseYear,
+        director = director
     )
 }

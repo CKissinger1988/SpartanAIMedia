@@ -5,6 +5,8 @@ import com.spartanai.spartanaimedia.data.local.MediaDatabase
 import com.spartanai.spartanaimedia.data.remote.*
 import com.spartanai.spartanaimedia.data.repository.MediaRepositoryImpl
 import com.spartanai.spartanaimedia.domain.repository.MediaRepository
+import com.spartanai.spartanaimedia.domain.usecase.GetHomeScreenDataUseCase
+import com.spartanai.spartanaimedia.domain.usecase.GetRecommendationsUseCase
 import com.spartanai.spartanaimedia.ui.media.MediaViewModel
 import net.sqlcipher.database.SupportFactory
 import okhttp3.OkHttpClient
@@ -55,5 +57,10 @@ val appModule = module {
     singleOf(::P2PManager)
     singleOf(::MediaSyncManager)
     singleOf(::MediaRepositoryImpl) { bind<MediaRepository>() }
+
+    // Use Cases
+    singleOf(::GetRecommendationsUseCase)
+    singleOf(::GetHomeScreenDataUseCase)
+
     viewModelOf(::MediaViewModel)
 }
