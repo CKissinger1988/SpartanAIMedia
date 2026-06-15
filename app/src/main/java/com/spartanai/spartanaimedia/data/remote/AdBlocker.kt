@@ -15,7 +15,13 @@ object AdBlocker {
         "propellerads.com",
         "exoclick.com",
         "onclickads.net",
-        "syndication.exdynsrv.com"
+        "syndication.exdynsrv.com",
+        "vidcloud.icu",
+        "rabbitstream.net",
+        "megacloud.tv",
+        "dokicloud.one",
+        "vicloud.icu",
+        "upstream.to"
     )
 
     fun isAd(uri: Uri): Boolean {
