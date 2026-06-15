@@ -102,6 +102,104 @@ class MediaScraper {
                 releaseYear = "2010",
                 cast = listOf("Halina Reijn", "Thom Hoffman"),
                 director = "Colin Levy"
+            ),
+            MediaItem(
+                id = "caminandes_1",
+                title = "Caminandes 1: Llama Drama",
+                thumbnailUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Caminandes_-_Llama_Drama_-_Poster.jpg/1200px-Caminandes_-_Llama_Drama_-_Poster.jpg",
+                mediaUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4", // Using placeholder video
+                description = "Koro the Llama has a bit of trouble navigating the harsh Patagonian landscape.",
+                category = "Shorts",
+                genre = "Animation",
+                resolution = "1080p",
+                rating = 8.1f,
+                releaseYear = "2013",
+                cast = listOf("Koro the Llama", "Oti the Penguin"),
+                director = "Pablo Vazquez"
+            ),
+            MediaItem(
+                id = "caminandes_2",
+                title = "Caminandes 2: Gran Dillama",
+                thumbnailUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Caminandes_2_-_Gran_Dillama_-_Poster.jpg/1200px-Caminandes_2_-_Gran_Dillama_-_Poster.jpg",
+                mediaUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4", // Using placeholder video
+                description = "Koro the Llama goes on a hunt for berries in the winter, only to face new and hilarious challenges.",
+                category = "Shorts",
+                genre = "Animation",
+                resolution = "1080p",
+                rating = 8.3f,
+                releaseYear = "2013",
+                cast = listOf("Koro the Llama", "Oti the Penguin"),
+                director = "Pablo Vazquez"
+            ),
+            MediaItem(
+                id = "cosmos_laundromat",
+                title = "Cosmos Laundromat",
+                thumbnailUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Cosmos_Laundromat_-_First_Cycle_poster.jpg/1200px-Cosmos_Laundromat_-_First_Cycle_poster.jpg",
+                mediaUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4", // Using placeholder video
+                description = "A suicidal sheep named Franck meets Victor, a mysterious salesman who offers him the gift of multiple lives.",
+                category = "Movies",
+                genre = "Sci-Fi",
+                resolution = "4K",
+                rating = 8.7f,
+                releaseYear = "2015",
+                cast = listOf("Franck", "Victor"),
+                director = "Mathieu Auvray"
+            ),
+            MediaItem(
+                id = "agent_327",
+                title = "Agent 327: Operation Barbershop",
+                thumbnailUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Agent_327_Operation_Barbershop_poster.jpg/1200px-Agent_327_Operation_Barbershop_poster.jpg",
+                mediaUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4", // Using placeholder video
+                description = "Agent 327 investigates a secret barbershop in Amsterdam, leading to an intense and comic fight.",
+                category = "Shorts",
+                genre = "Action",
+                resolution = "1080p",
+                rating = 8.6f,
+                releaseYear = "2017",
+                cast = listOf("Agent 327", "Boris Kloris"),
+                director = "Colin Levy"
+            ),
+            MediaItem(
+                id = "spring",
+                title = "Spring",
+                thumbnailUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Spring_-_Blender_Open_Movie_poster.jpg/1200px-Spring_-_Blender_Open_Movie_poster.jpg",
+                mediaUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", // Using placeholder video
+                description = "Spring is the story of a shepherd girl and her dog, who face ancient spirits to bring spring to the land.",
+                category = "Movies",
+                genre = "Fantasy",
+                resolution = "4K",
+                rating = 8.9f,
+                releaseYear = "2019",
+                cast = listOf("Spring", "Dog"),
+                director = "Andy Goralczyk"
+            ),
+            MediaItem(
+                id = "the_daily_dweebs",
+                title = "The Daily Dweebs",
+                thumbnailUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/The_Daily_Dweebs_poster.jpg/1200px-The_Daily_Dweebs_poster.jpg",
+                mediaUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", // Using placeholder video
+                description = "Meet Dixy the dog, who finds himself in a comedic rivalry with a rebellious chicken.",
+                category = "Series",
+                genre = "Animation",
+                resolution = "1080p",
+                rating = 7.5f,
+                releaseYear = "2018",
+                cast = listOf("Dixy", "Chicken"),
+                director = "Hjalti Hjalmarsson"
+            ),
+            MediaItem(
+                id = "hero",
+                title = "Hero",
+                thumbnailUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Hero_-_Blender_Grease_Pencil_Showcase.jpg/1200px-Hero_-_Blender_Grease_Pencil_Showcase.jpg",
+                mediaUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", // Using placeholder video
+                description = "A stylized, 2D/3D hybrid animation showcasing the capabilities of Grease Pencil in an epic martial arts battle.",
+                category = "Shorts",
+                genre = "Action",
+                resolution = "1080p",
+                rating = 8.4f,
+                releaseYear = "2018",
+                cast = listOf("Hero", "Villain"),
+                director = "Daniel Martinez Lara"
             )
         )
     }
