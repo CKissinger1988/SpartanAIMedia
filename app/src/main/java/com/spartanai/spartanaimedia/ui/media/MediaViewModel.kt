@@ -133,7 +133,7 @@ class MediaViewModel(
                     allItems.find { it.id == id }?.let { current ->
                         recommendationEngine.getRelatedContent(current, allItems)
                     }
-                } ?: emptyList()
+                } ?: recommendationEngine.getPersonalizedRecommendations(allItems, continueWatching)
 
                 MediaUiState(
                     mediaByCategory = grouped,
@@ -304,15 +304,13 @@ class MediaViewModel(
         }
     }
 
-    fun shareMediaP2P(item: MediaItem, peer: PeerDevice) {
+    fun shareMediaP2P(item: MediaItem, peer: PeerDevice, onProgress: ((Float) -> Unit)? = null) {
         viewModelScope.launch {
             val isSecure = uiState.value.selectedProfile?.isAnonymous ?: false
             val localPath = if (isSecure) "secure_media/${item.title}.mp4" else "Movies/${item.title}.mp4"
-            // Get files dir from download manager or context
-            // Since we don't have context here, we can ask downloadManager to get the file
             val file = downloadManager.getFileForPath(localPath)
             if (file != null && file.exists()) {
-                p2pManager.sendEncryptedFile(peer, file)
+                p2pManager.sendEncryptedFile(peer, file, onProgress)
             }
         }
     }

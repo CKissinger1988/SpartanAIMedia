@@ -131,7 +131,11 @@ class P2PManager(private val context: Context) {
         }
     }
     
-    suspend fun sendEncryptedFile(peer: PeerDevice, file: File): Boolean = withContext(Dispatchers.IO) {
+    suspend fun sendEncryptedFile(
+        peer: PeerDevice, 
+        file: File, 
+        onProgress: ((Float) -> Unit)? = null
+    ): Boolean = withContext(Dispatchers.IO) {
         try {
             val socket = Socket(peer.host, peer.port)
             
@@ -141,8 +145,17 @@ class P2PManager(private val context: Context) {
             
             val cipherOutputStream = CipherOutputStream(socket.getOutputStream(), cipher)
             
+            val totalBytes = file.length().toFloat()
+            var bytesCopied = 0L
+            val buffer = ByteArray(8 * 1024)
+            var bytes = 0
+            
             FileInputStream(file).use { fis ->
-                fis.copyTo(cipherOutputStream)
+                while (fis.read(buffer).also { bytes = it } >= 0) {
+                    cipherOutputStream.write(buffer, 0, bytes)
+                    bytesCopied += bytes
+                    onProgress?.invoke(bytesCopied / totalBytes)
+                }
             }
             
             cipherOutputStream.close()

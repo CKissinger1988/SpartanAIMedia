@@ -29,6 +29,7 @@ fun DownloadsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showShareDialog by remember { mutableStateOf<MediaItem?>(null) }
+    var transferProgress by remember { mutableFloatStateOf(-1f) }
 
     Scaffold(
         topBar = {
@@ -47,17 +48,25 @@ fun DownloadsScreen(
                 Text("No downloads yet", style = MaterialTheme.typography.bodyLarge)
             }
         } else {
-            LazyColumn(
-                modifier = Modifier.padding(padding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(uiState.downloadedMedia) { item ->
-                    DownloadItemCard(
-                        item = item,
-                        onClick = onMediaClick,
-                        onShare = { showShareDialog = item }
+            Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+                if (transferProgress in 0f..1f) {
+                    LinearProgressIndicator(
+                        progress = { transferProgress },
+                        modifier = Modifier.fillMaxWidth().height(4.dp),
+                        color = MaterialTheme.colorScheme.primary
                     )
+                }
+                LazyColumn(
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(uiState.downloadedMedia) { item ->
+                        DownloadItemCard(
+                            item = item,
+                            onClick = onMediaClick,
+                            onShare = { showShareDialog = item }
+                        )
+                    }
                 }
             }
         }
@@ -74,7 +83,12 @@ fun DownloadsScreen(
                             items(uiState.nearbyPeers) { peer ->
                                 Card(
                                     modifier = Modifier.fillMaxWidth().clickable {
-                                        viewModel.shareMediaP2P(item, peer)
+                                        viewModel.shareMediaP2P(item, peer) { progress ->
+                                            transferProgress = progress
+                                            if (progress >= 1f) {
+                                                transferProgress = -1f
+                                            }
+                                        }
                                         showShareDialog = null
                                     },
                                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
