@@ -84,23 +84,12 @@ class MediaViewModel(
         try {
             val selectedProfile = data.selectedProfile
             if (selectedProfile == null) {
-                flow {
-                    emit(MediaUiState(
-                        profiles = data.profiles,
-                        updateInfo = data.updateInfo,
-                        isLoading = false
-                    ))
-                }
+                flowOf(MediaUiState(
+                    profiles = data.profiles,
+                    updateInfo = data.updateInfo,
+                    isLoading = false
+                ))
             } else {
-                // Internal logic for chat and events
-                val latestEvent = sync.first
-                if (latestEvent is SyncEvent.Message) {
-                    val currentMessages = _chatMessages.value
-                    if (currentMessages.none { it.timestamp == latestEvent.timestamp && it.userId == latestEvent.userId }) {
-                        _chatMessages.value = (currentMessages + latestEvent).takeLast(50)
-                    }
-                }
-
                 combine(
                     repository.getMediaItems(context.query),
                     repository.getWatchlist(selectedProfile.userId),
@@ -114,11 +103,6 @@ class MediaViewModel(
                     val continueWatching = filteredItems.filter { it.lastPlaybackPosition > 0 && it.progress < 0.95f }
                         .sortedByDescending { m -> m.lastPlaybackPosition }
                     
-                    // Proactive Pre-loading
-                    if (continueWatching.isNotEmpty()) {
-                        preloadManager.preloadItems(continueWatching)
-                    }
-
                     // AI Suggestions
                     val suggestions = try { suggestionManager.getSuggestions(context.query, allItems) } catch(e: Exception) { emptyList() }
 
@@ -155,7 +139,7 @@ class MediaViewModel(
             }
         } catch (e: Exception) {
             Log.e("SpartanAI_VM", "Error in UI state pipeline", e)
-            flow { emit(MediaUiState(error = e.message, isLoading = false)) }
+            flowOf(MediaUiState(error = e.message, isLoading = false))
         }
     }.flatMapLatest { it }
     .catch { e ->
@@ -184,6 +168,8 @@ class MediaViewModel(
 
     init {
         seedInitialData()
+        observeSyncEvents()
+        observePreloading()
     }
 
     override fun onCleared() {
@@ -192,13 +178,44 @@ class MediaViewModel(
         syncManager.disconnect()
     }
 
+    private fun observeSyncEvents() {
+        syncManager.incomingEvents
+            .onEach { event ->
+                if (event is SyncEvent.Message) {
+                    val currentMessages = _chatMessages.value
+                    if (currentMessages.none { it.timestamp == event.timestamp && it.userId == event.userId }) {
+                        _chatMessages.value = (currentMessages + event).takeLast(50)
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun observePreloading() {
+        // Preload "Continue Watching" items automatically
+        uiState.map { it.continueWatching }
+            .distinctUntilChanged()
+            .onEach { items ->
+                if (items.isNotEmpty()) {
+                    preloadManager.preloadItems(items)
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
     private fun seedInitialData() {
         viewModelScope.launch {
-            repository.getAllProfiles().first().let { profiles ->
+            try {
+                val profiles = kotlinx.coroutines.withTimeoutOrNull(2000) {
+                    repository.getAllProfiles().first()
+                } ?: emptyList()
+                
                 if (profiles.isEmpty()) {
-                    repository.createProfile("Spartan Warrior", "https://api.dicebear.com/7.x/avataaars/svg?seed=Spartan")
-                    repository.createProfile("Anonymous Shadow", "https://api.dicebear.com/7.x/bottts/svg?seed=Shadow", isAnonymous = true)
+                    repository.createProfile("Spartan Warrior", "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=400&q=80")
+                    repository.createProfile("Anonymous Shadow", "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&q=80", isAnonymous = true)
                 }
+            } catch (e: Exception) {
+                Log.e("SpartanAI_VM", "Error during data seeding", e)
             }
             repository.refreshMediaItems()
         }
@@ -241,29 +258,11 @@ class MediaViewModel(
     }
 
     fun loginWithPi() {
-        // Feature disabled for later integration
-        /*
-        viewModelScope.launch {
-            piBlockchainManager.authenticate()
-            piBlockchainManager.piAuthState.collectLatest { result ->
-                if (result is PiBlockchainManager.PiAuthResult.Success) {
-                    val userId = uiState.value.selectedProfile?.userId ?: return@collectLatest
-                    repository.updatePiData(userId, result.username, result.walletAddress)
-                }
-            }
-        }
-        */
+        // Feature disabled
     }
 
     fun togglePiNode(isActive: Boolean) {
-        // Feature disabled for later integration
-        /*
-        val userId = uiState.value.selectedProfile?.userId ?: return
-        viewModelScope.launch {
-            repository.setPiNodeActive(userId, isActive)
-            if (isActive) p2pManager.startP2P() else p2pManager.stopP2P()
-        }
-        */
+        // Feature disabled
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -283,16 +282,6 @@ class MediaViewModel(
     fun selectProfile(profile: UserProfile) {
         viewModelScope.launch {
             repository.selectProfile(profile.userId)
-            // Properly handle side-effects on profile selection
-            /* Pi Node disabled for later integration
-            piNodeService.setNodeActive(profile.isPiNodeActive)
-            if (profile.isPiNodeActive) {
-                p2pManager.startP2P()
-            } else {
-                p2pManager.stopP2P()
-            }
-            */
-            // P2P should still be active for sharing even without Pi Node
             p2pManager.startP2P()
         }
     }
@@ -316,10 +305,6 @@ class MediaViewModel(
             val update = updateManager.performManualCheck()
             if (update != null) {
                 _manualUpdateInfo.value = update
-            } else {
-                // Emitting a dummy object just to show "No updates found" in UI if needed,
-                // but for now we'll just set it to null or an empty UpdateInfo
-                _manualUpdateInfo.value = UpdateInfo("", "", false, false)
             }
         }
     }
@@ -353,7 +338,6 @@ class MediaViewModel(
         val userId = uiState.value.selectedProfile?.userId ?: return
         viewModelScope.launch {
             repository.updateProxyConfig(userId, host, port, type)
-            // Trigger a refresh to use the new proxy settings immediately
             repository.refreshMediaItems()
         }
     }

@@ -37,7 +37,7 @@ fun OnboardingScreen(
         OnboardingPage(
             title = "Welcome to SpartanAI",
             description = "Experience premium, decentralized media streaming with AI-powered discovery and total privacy.",
-            icon = Icons.Default.RocketLaunch,
+            icon = Icons.Default.AutoAwesome,
             color = MaterialTheme.colorScheme.primary
         ),
         OnboardingPage(
@@ -47,15 +47,15 @@ fun OnboardingScreen(
             color = Color(0xFF4CAF50)
         ),
         OnboardingPage(
-            title = "Pi Network Powered",
-            description = "Support the ecosystem with our integrated light node and earn rewards while you stream.",
-            icon = Icons.Default.Hub,
+            title = "P2P Network Powered",
+            description = "Support the ecosystem with our decentralized file sharing and earn rewards while you stream.",
+            icon = Icons.Default.WifiTethering,
             color = Color(0xFFFFC107)
         ),
         OnboardingPage(
             title = "Secure & Anonymous",
             description = "Enjoy private discovery and encrypted local storage for your media collection.",
-            icon = Icons.Default.Shield,
+            icon = Icons.Default.Security,
             color = Color(0xFFE91E63)
         )
     )
@@ -66,7 +66,8 @@ fun OnboardingScreen(
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            beyondViewportPageCount = 1
         ) { page ->
             if (page < pages.size) {
                 OnboardingPageView(pages[page])
