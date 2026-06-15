@@ -1,5 +1,6 @@
 package com.spartanai.spartanaimedia.ui.media
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spartanai.spartanaimedia.data.remote.*
@@ -80,77 +81,87 @@ class MediaViewModel(
             Triple(event, connected, messages)
         }
     ) { data, context, sync ->
-        
-        val selectedProfile = data.selectedProfile
-        if (selectedProfile == null) {
-            flow {
-                emit(MediaUiState(
-                    profiles = data.profiles,
-                    updateInfo = data.updateInfo,
-                    isLoading = false
-                ))
-            }
-        } else {
-            // Internal logic for chat and events
-            val latestEvent = sync.first
-            if (latestEvent is SyncEvent.Message) {
-                val currentMessages = _chatMessages.value
-                if (currentMessages.none { it.timestamp == latestEvent.timestamp && it.userId == latestEvent.userId }) {
-                    _chatMessages.value = (currentMessages + latestEvent).takeLast(50)
+        try {
+            val selectedProfile = data.selectedProfile
+            if (selectedProfile == null) {
+                flow {
+                    emit(MediaUiState(
+                        profiles = data.profiles,
+                        updateInfo = data.updateInfo,
+                        isLoading = false
+                    ))
                 }
-            }
-
-            combine(
-                repository.getMediaItems(context.query),
-                repository.getWatchlist(selectedProfile.userId),
-                repository.getMediaItems(null) 
-            ) { filteredItems, watchlist, allItems ->
-                val filteredByTab = if (context.category == "All") filteredItems else filteredItems.filter { it.category == context.category }
-                val grouped = filteredByTab.groupBy { it.category }
-                    .mapValues { entry -> entry.value.groupBy { it.genre } }
-                
-                val downloaded = filteredItems.filter { it.isDownloaded }
-                val continueWatching = filteredItems.filter { it.lastPlaybackPosition > 0 && it.progress < 0.95f }
-                    .sortedByDescending { m -> m.lastPlaybackPosition }
-                
-                // Proactive Pre-loading
-                if (continueWatching.isNotEmpty()) {
-                    preloadManager.preloadItems(continueWatching)
-                }
-
-                // AI Suggestions
-                val suggestions = suggestionManager.getSuggestions(context.query, allItems)
-
-                // Recommendations
-                val recommendations = context.currentMediaId?.let { id ->
-                    allItems.find { it.id == id }?.let { current ->
-                        recommendationEngine.getRelatedContent(current, allItems)
+            } else {
+                // Internal logic for chat and events
+                val latestEvent = sync.first
+                if (latestEvent is SyncEvent.Message) {
+                    val currentMessages = _chatMessages.value
+                    if (currentMessages.none { it.timestamp == latestEvent.timestamp && it.userId == latestEvent.userId }) {
+                        _chatMessages.value = (currentMessages + latestEvent).takeLast(50)
                     }
-                } ?: recommendationEngine.getPersonalizedRecommendations(allItems, continueWatching)
+                }
 
-                MediaUiState(
-                    mediaByCategory = grouped,
-                    allItems = filteredItems,
-                    downloadedMedia = downloaded,
-                    continueWatching = continueWatching,
-                    watchlist = watchlist,
-                    recommendations = recommendations,
-                    profiles = data.profiles,
-                    selectedProfile = selectedProfile,
-                    searchQuery = context.query,
-                    searchSuggestions = suggestions,
-                    selectedCategory = context.category,
-                    nodeStatus = context.nodeStatus,
-                    updateInfo = data.updateInfo,
-                    nearbyPeers = context.peers,
-                    syncEvent = sync.first,
-                    chatMessages = sync.third,
-                    isSyncConnected = sync.second,
-                    isLoading = false
-                )
+                combine(
+                    repository.getMediaItems(context.query),
+                    repository.getWatchlist(selectedProfile.userId),
+                    repository.getMediaItems(null) 
+                ) { filteredItems, watchlist, allItems ->
+                    val filteredByTab = if (context.category == "All") filteredItems else filteredItems.filter { it.category == context.category }
+                    val grouped = filteredByTab.groupBy { it.category }
+                        .mapValues { entry -> entry.value.groupBy { it.genre } }
+                    
+                    val downloaded = filteredItems.filter { it.isDownloaded }
+                    val continueWatching = filteredItems.filter { it.lastPlaybackPosition > 0 && it.progress < 0.95f }
+                        .sortedByDescending { m -> m.lastPlaybackPosition }
+                    
+                    // Proactive Pre-loading
+                    if (continueWatching.isNotEmpty()) {
+                        preloadManager.preloadItems(continueWatching)
+                    }
+
+                    // AI Suggestions
+                    val suggestions = try { suggestionManager.getSuggestions(context.query, allItems) } catch(e: Exception) { emptyList() }
+
+                    // Recommendations
+                    val recommendations = try {
+                        context.currentMediaId?.let { id ->
+                            allItems.find { it.id == id }?.let { current ->
+                                recommendationEngine.getRelatedContent(current, allItems)
+                            }
+                        } ?: recommendationEngine.getPersonalizedRecommendations(allItems, continueWatching)
+                    } catch(e: Exception) { emptyList() }
+
+                    MediaUiState(
+                        mediaByCategory = grouped,
+                        allItems = filteredItems,
+                        downloadedMedia = downloaded,
+                        continueWatching = continueWatching,
+                        watchlist = watchlist,
+                        recommendations = recommendations,
+                        profiles = data.profiles,
+                        selectedProfile = selectedProfile,
+                        searchQuery = context.query,
+                        searchSuggestions = suggestions,
+                        selectedCategory = context.category,
+                        nodeStatus = context.nodeStatus,
+                        updateInfo = data.updateInfo,
+                        nearbyPeers = context.peers,
+                        syncEvent = sync.first,
+                        chatMessages = sync.third,
+                        isSyncConnected = sync.second,
+                        isLoading = false
+                    )
+                }
             }
+        } catch (e: Exception) {
+            Log.e("SpartanAI_VM", "Error in UI state pipeline", e)
+            flow { emit(MediaUiState(error = e.message, isLoading = false)) }
         }
     }.flatMapLatest { it }
+    .catch { e ->
+        Log.e("SpartanAI_VM", "Fatal error in StateFlow", e)
+        emit(MediaUiState(error = e.message, isLoading = false))
+    }
     .stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
